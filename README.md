@@ -19,4 +19,4 @@ Estas son algunas de las ideas para contribuir a la mejora de estos apuntes:
 
 ## ¿Y qué gano contribuyendo a la mejora de estos apuntes?
 
-La filosofía de la comunidad **open source** lleva tiempo en marcha y sus beneficios son indudables. Tu contribución ayuda a los que vengan detrás, igual que tú te beneficias por lo que has recibido. Pero, si lo consideras oportuno, yo voy a mantener una lista actualizada de agradecimientos en estos apuntes en la que mencionaré a aquellos que hayan contribuido a la mejora de este material.
+La filosofía de la comunidad **open source** lleva tiempo en marcha y sus beneficios son indudables. Tu contribución ayuda a los que vengan detrás, igual que tú te beneficias por lo que has recibido. Pero, si lo consideras oportuno, tu nombre se incluirá en una lista actualizada de agradecimientos a aquellos que hayan contribuido a la mejora de este material.
