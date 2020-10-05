@@ -1,0 +1,226 @@
+\documentclass[a4paper,12pt]{book}
+
+\usepackage[left=2.25cm,right=2.25cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{colortbl}
+% Alternativas de fncychap: Sonny, Lenny, Glenn, Conny, Rejne, Bjarne.
+\usepackage[Rejne]{fncychap}
+\usepackage{type1cm} % scalable fonts
+\usepackage{lettrine}
+\usepackage{fancyhdr}
+\usepackage{moreverb}
+% Identacion y separacion de parrafos
+\usepackage{parskip}
+% Posicion de figuras
+\usepackage{float}
+% Diagramas
+\usepackage{pstricks, pst-node, pst-tree}
+\usepackage{xyling}
+% Tablas
+\usepackage{multirow}
+% Ejemplos y definiciones
+\usepackage{amsthm}
+% Mejor que eqnarray : align
+\usepackage{amsmath}
+% Símbolos AMS
+\usepackage{amssymb}
+% Tablas con líneas de puntos
+\usepackage{array}
+\usepackage{arydshln}
+% Dos columnas
+\usepackage{multicol}
+% Diagramas de autómatas
+\usepackage{gastex}
+% Tabla de contenidos por capítulo
+%\usepackage[spanish]{minitoc}
+% Hiperenlaces
+\usepackage[bookmarks]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black,
+	linktocpage
+}
+\renewcommand{\rmdefault}{ptm}
+
+\begin{document}
+\nocite{*}
+\title{Python}
+\author{Eduardo Martínez Graciá, Mercedes Valdés Vela, Santiago Paredes Moreno, José Manuel Juárez Herrero}
+
+\renewcommand{\tablename}{Tabla}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+\renewcommand{\chaptermark}[1]{\lhead[{\sc{\chaptername\ #1}}]{}}
+\renewcommand{\sectionmark}[1]{\rhead[ ]{{\thesection.\ #1}}}
+
+
+\begin{titlepage}
+
+\begin{center}
+
+% Upper part of the page
+\vfill
+
+\includegraphics[height=0.18\textwidth]{imagenes/FIUM}\\[2.5cm]
+
+\textsc{\LARGE Autómatas y Lenguajes Formales}\\[0.5cm]
+
+\textsc{\Large Grado en Ingeniería Informática}\\[0.5cm]
+
+
+% Title
+\HRule \\[0.4cm]
+{ \huge \bfseries Apuntes de Python}\\[0.4cm]
+
+\HRule \\[1.5cm]
+
+% Author and supervisor
+\begin{minipage}{0.5\textwidth}
+\begin{center}
+\large
+\emph{Autores:}\\
+Eduardo \textsc{Martínez Graciá}\\
+edumart@um.es\\
+Mercedes \textsc{Valdés Vela}\\
+mdvaldes@um.es\\
+Santiago \textsc{Paredes Moreno}\\
+chapu@um.es\\
+José Manuel \textsc{Juárez Herrero}\\
+jmjuarez@um.es
+\end{center}
+\end{minipage}
+
+\vskip 2em
+
+\includegraphics[height=0.18\textwidth]{imagenes/Python-logo}
+
+\vfill
+
+% Bottom of the page
+{\large \today}
+
+\end{center}
+
+\end{titlepage}
+
+\clearpage
+
+\pagestyle{empty}
+
+\null \vfill
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\setcounter{page}1
+\setcounter{secnumdepth}{4}	%Profundidad de la numeracion del indice
+\setcounter{tocdepth}{2}	%Profundidad del indice
+
+%\dominitoc
+%\faketableofcontents
+
+\pagestyle{fancy}
+\renewcommand{\chaptername}{}
+\renewcommand{\chaptermark}[1]{\lhead[{\sc{\chaptername\ \thechapter.\ #1}}]{}}
+\renewcommand{\sectionmark}[1]{\rhead[ ]{{\thesection.\ #1}}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\setlength{\headheight}{14pt}
+
+\lstset{
+    breaklines=true,
+    %
+    extendedchars=true,
+    literate=
+	{¿}{{?`}}1 {¡}{{!`}}1
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+    {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+    {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+    {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+    {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {û}{{\^u}}1
+    {Â}{{\^A}}1 {Ê}{{\^E}}1 {Î}{{\^I}}1 {Ô}{{\^O}}1 {Û}{{\^U}}1
+    {œ}{{\oe}}1 {Œ}{{\OE}}1 {æ}{{\ae}}1 {Æ}{{\AE}}1 {ß}{{\ss}}1
+    {ç}{{\c c}}1 {Ç}{{\c C}}1 {ø}{{\o}}1 {å}{{\r a}}1 {Å}{{\r A}}1
+    {€}{{\EUR}}1 {£}{{\pounds}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 
+}
+
+\setlength{\parindent}{15pt}
+\setlength{\itemindent}{15pt}
+
+\lstset{basicstyle=\fontsize{12}{13}\ttfamily,showstringspaces=false,language=Python,numbers=left,numberstyle=\tiny,frame=tb,columns=fullflexible,inputencoding=utf8}
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\pagestyle{plain}
+
+\section*{Agradecimientos}
+
+El uso de Python en las prácticas de Autómatas y Lenguajes Formales se podría haber quedado en un simple proyecto si no hubiésemos contado con la ayuda de un alumno interno con suficiente entusiasmo como para iniciar el camino. Adrián Cánovas Rodríguez colaboró con los profesores de la asignatura durante el curso 2017/2018, probando las posibilidades del lenguaje para ser empleado en el desarrollo del tipo de aplicaciones que se plantean en los enunciados de prácticas. Elaboró una primera versión del manual de instalación de Eclipse con Python, así como el código para cargar y manejar desde Python los autómatas finitos deterministas generados con las versiones 7 y 8-beta de la herramienta JFLAP.
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\setcounter{page}1
+\setcounter{secnumdepth}{4}	%Profundidad de la numeracion del indice
+\setcounter{tocdepth}{2}	%Profundidad del indice
+
+\tableofcontents
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\pagestyle{fancy}
+
+% Capítulo 1: Introducción
+\input{Cap1.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 2: Fundamentos
+\input{Cap2.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 3: Módulos
+\input{Cap3.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 4: Strings
+\input{Cap4.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 5: Listas, diccionarios, conjuntos y tuplas
+\input{Cap5.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 6: Entrada y salida
+\input{Cap6.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 7: Clases
+\input{Cap7.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 8: AFDs en Python
+\input{Cap8.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 9: Expresiones regulares
+\input{Cap9.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+% Capítulo 10: Documentación del código
+\input{Cap10.tex}
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\bibliography{bibliografia}
+\addcontentsline{toc}{chapter}{Bibliografía}
+\bibliographystyle{unsrt}
+
+\clearpage{\pagestyle{empty}\cleardoublepage}
+
+\end{document}

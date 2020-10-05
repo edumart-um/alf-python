@@ -1,0 +1,131 @@
+%!TEX root = Python.tex
+
+\chapter{Autómatas en Python}
+
+\lettrine[lines=5]{E}{n} este capítulo iniciamos la descripción de los aspectos que están más relacionados con la asignatura Autómatas y Lenguajes Formales de la FIUM. Concretamente, vamos a centrarnos en el modo de manipular los autómatas finitos deterministas (AFDs) desde el código Python. Los autómatas que podremos manejar tendrán que haber sido editados con la herramienta JFLAP, bien en su versión 7 como en la 8beta. No entraremos en la descripción del formalismo de los AFDs, sino en el funcionamiento del código disponible para usarlos desde Python.
+
+\section{Instalación del paquete \texttt{jflap}}
+
+En los recursos de la asignatura en el Aula Virtual puedes encontrar la carpeta \texttt{Python}. Dentro de ella hay un fichero \texttt{jflap.zip}. Al descomprimirlo se genera una carpeta \texttt{jflap} dentro de la cual encontrarás los siguientes tres ficheros: 
+
+\begin{itemize}
+	\item \texttt{\_\_init\_\_.py}: fichero de inicialización del paquete.
+	\item \texttt{Afd.py}: es el módulo principal que contiene la clase \texttt{Afd} que manejaremos para manipular el autómata desde Python.
+	\item \texttt{Transiciones.py}: es un módulo auxiliar de \texttt{Afd.py}. No es necesario importarlo.
+\end{itemize}
+
+Mueve la carpeta \texttt{jflap} al directorio \texttt{src} del proyecto de Eclipse en el que estés trabajando. De los tres ficheros anteriores, únicamente será necesario importar la clase \texttt{Afd} del fichero \texttt{Afd.py}. Para esto, tendremos que usar la siguiente línea de importación desde nuestro código:
+
+\begin{lstlisting}
+from jflap.Afd import Afd
+\end{lstlisting}
+
+\section{Instanciación de un Afd}
+
+Dependiendo de la versión de JFLAP que estés usando, cambia ligeramente el modo de instanciar un objeto \texttt{Afd}. Puedes ver la versión de JFLAP seleccionando el menú \emph{Help}, opción \emph{About}. Necesitamos dos argumentos:
+\begin{itemize}
+	\item Ruta del fichero JFLAP que contiene el autómata. Si has usado la versión 7, el fichero tendrá como extensión \texttt{.jff}; si has usado la versión 8beta tendrá como extensión \texttt{.jflap}. Indica la ruta completa, recordando que si estás en Windows conviene que uses \texttt{r'...'} para evitar problemas con las contrabarras que separan los directorios.
+	\item Versión del fichero.  La versión del fichero es un número. Debes usar el 6 (sí, no es un error, 6 en lugar de 7) para los ficheros \texttt{.jff} y el 8 para los ficheros \texttt{.jflap}. Si no indicas nada, se usa 6 por defecto.
+\end{itemize}
+
+No estaría mal que empleases un \texttt{try-except} similar a éste:
+
+\begin{lstlisting}
+from jflap.Afd import Afd
+from sys import stderr	
+ruta = r'C:\prueba.jff'
+try:
+    autómata = Afd(ruta)
+except FileNotFoundError:
+    print('Me temo que la ruta está mal',file=stderr)
+except Exception as error:
+    print('Problema analizando el fichero:',error,file=stderr)
+\end{lstlisting}
+
+La excepción \texttt{FileNotFoundError} se lanza desde el constructor del objeto \texttt{Afd} cuando el fichero pasado como primer argumento no existe. En un programa que solicite el autómata al usuario desde la consola, lo normal sería pedirlo nuevamente. La segunda línea \texttt{except} captura cualquier excepción. Por ejemplo, si el fichero no se puede analizar con la versión especificada como segundo parámetro, se recibirá una excepción que indicará el problema. Igualmente, si la versión especificada no es ni la 6 ni la 8, se lanzará una excepción advirtiéndonos de esto.
+
+En las siguientes secciones consideramos que estamos trabajando con un autómata como el indicado en la figura \ref{fig:prueba_jff}.
+
+\begin{figure}
+\begin{center}
+\begin{picture}(60,30)(0,0)
+\node[Nmarks=i](Q0)(10,15){$q_0$}
+\node[Nmarks=r](Q1)(50,15){$q_1$}
+\drawedge[curvedepth=8](Q0,Q1){$0$}
+\drawloop[loopdiam=6](Q0){$1$}
+\drawedge[curvedepth=8](Q1,Q0){$0$}
+\drawloop[loopdiam=6](Q1){$1$}
+\end{picture}
+\end{center}
+\caption{Autómata \texttt{prueba.jff}}
+\label{fig:prueba_jff}
+\end{figure}
+
+\section{Uso de Afd}
+
+En esta sección se proporciona un pequeño manual de uso de un objeto \texttt{Afd}. En primer lugar, veremos cómo imprimir la información del autómata, que nos puede servir en la fase de pruebas. Seguidamente estudiaremos los métodos que son necesarios para simular con el autómata, es decir, para ir recorriendo transiciones desde el estado inicial, usando un símbolo en cada paso.
+
+\subsection{Mostrar el Afd}
+
+Para poder depurar un programa que utiliza un objeto \texttt{Afd}, puede ser interesante imprimir toda la información que contiene para verificar que coincide con el autómata que hemos indicado al instanciar el objeto. Para ello, podemos usar el método \texttt{mostrarAfd()}:
+
+\begin{lstlisting}
+autómata = Afd(ruta,versión)
+# Depuramos
+autómata.mostrarAfd()
+\end{lstlisting}
+
+El resultado es un volcado por consola de la información que contiene. Por ejemplo, para el autómata mostrado en la figura \ref{fig:prueba_jff}, veríamos lo siguiente:
+
+\begin{lstlisting}
+Número de estados: 2
+Número de transiciones: 4
+El estado inicial es: 'q0'
+Los estados finales son: ['q1']
+El alfabeto del autómata es:  ['0', '1']
+El estado 'q0' tiene estas transiciones:
+{'1' : 'q0', '0' : 'q1' }
+El estado 'q1' tiene estas transiciones:
+{'0' : 'q0', '1' : 'q1' }
+\end{lstlisting}
+
+\subsection{Obtener el estado inicial}
+
+Para validar una cadena con un autómata, necesitamos comenzar el recorrido de los símbolos de la cadena desde el estado inicial. Para recuperar el estado inicial, simplemente tenemos que invocar al método \texttt{getEstadoInicial()} del autómata:
+
+\begin{lstlisting}
+autómata = Afd(ruta,versión)
+# Inicio de la simulación
+estadoActual = autómata.getEstadoInicial()
+print(estadoActual)
+\end{lstlisting}
+
+\subsection{Consultar una transición}
+
+Supongamos que disponemos de una variable \texttt{simboloActual} que contiene el siguiente símbolo a procesar de la cadena. Necesitaremos comprobar si, desde el estado actual, se puede avanzar a un nuevo estado recorriendo alguna transición con el símbolo actual. Disponemos del método \texttt{estadoSiguiente()} para realizar esta consulta:
+
+\begin{lstlisting}
+estadoSig = autómata.estadoSiguiente(estadoActual,simboloActual)
+print(estadoSig)
+\end{lstlisting}
+
+Este método recibe como argumentos el estado actual y el símbolo actual, y devuelve el estado al que se llega o \texttt{None} en caso de que la transición no esté definida.
+
+\subsection{Comprobar si un estado es final}
+
+Para verificar si una cadena se valida, debemos comprobar si el último estado al que se llega tras recorrer todos sus símbolos es final. Para realizar esta comprobación disponemos del método \texttt{esFinal()}:
+
+\begin{lstlisting}
+estadoSig = autómata.estadoSiguiente(estadoActual,simboloActual)
+print(autómata.esFinal(estadoSig))
+\end{lstlisting}
+
+Devuelve \texttt{True} en caso de que sí lo sea, \texttt{False} en caso contrario.
+
+\subsection{Obtener el alfabeto del autómata}
+
+Se puede consultar el alfabeto que emplea el autómata con el método \texttt{getAlfabeto()}:
+\begin{lstlisting}
+# Conjunto de símbolos
+alfabeto = autómata.getAlfabeto()
+\end{lstlisting}

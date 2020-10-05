@@ -1,0 +1,303 @@
+%!TEX root = Python.tex
+
+\chapter{Cadenas}
+\label{chap:cadenas}
+
+\lettrine[lines=5]{L}{as} cadenas (strings) en Python se usan para representar cualquier cosa que pueda ser codificada como texto o bytes. En la parte relativa al texto, las cadenas incluyen símbolos de cualquier alfabeto conocido, empleando para ello el sistema Unicode que permite la representación de todo tipo de caracteres de lenguajes humanos. Y por otro lado, una cadena puede almacenar bytes en crudo para representar contenidos binarios de cualquier tipo, como mensajes de red o ficheros multimedia.
+
+Al comenzar a tratar las cadenas en profundidad, es necesario realizar una aclaración sobre la división que Python realiza entre los tipos de dato que se manejan desde el propio lenguaje: tipos de dato inmutables y mutables.
+
+En Python se denomina \emph{inmutable} a un tipo de dato cuyas instancias no se pueden modificar. Son inmutables los tipos básicos que se describieron en la sección \ref{sec:tiposBasicos}, incluyendo las cadenas. Cualquier operación realizada sobre una instancia de estos tipos no altera la instancia, sino que genera una instancia nueva. En concreto, en el caso de las cadenas, son secuencias de caracteres o bytes con un orden en su posición de izquierda a derecha que no pueden ser modificadas. Por ejemplo, si se quiere concatenar una cadena con otra, se genera una tercera cadena con el resultado de la concatenación, pero no se alteran ninguna de las dos cadenas concatenadas. Sucede de forma similar con todas las operaciones realizables sobre las cadenas, que veremos en este capítulo. En el siguiente capítulo se describen los tipos mutables de listas y diccionarios. 
+
+Además de la creación de cadenas de caracteres que vimos en la sección \ref{sec:tiposBasicos}, es posible crear cadenas binarias anteponiendo el prefijo \texttt{b} a la cadena. Por ejemplo, el siguiente código genera una cadena binaria de dos bytes, el primero con valor 0 y el segundo con valor 255:
+
+\begin{lstlisting}
+a = b'\x00\xFF'
+\end{lstlisting}
+
+Cada byte se especifica usando el código de escape \texttt{$\backslash$x\emph{hh}}, donde \texttt{\emph{hh}} son dos dígitos hexadecimales.
+
+\section{Operaciones básicas}
+
+Las siguientes operaciones se pueden aplicar sobre cadenas por el hecho de que son secuencias ordenadas. Más adelante veremos que también es posible hacerlo con otros tipos de dato que cumplen esta misma condición.
+
+\subsection{Concatenación}
+
+La concatenación de cadenas se realiza con el operador \texttt{+}. Por ejemplo:
+
+\begin{lstlisting}
+s = 'abc' + 'def' # forma la cadena 'abcdef'
+print(s)
+\end{lstlisting}
+
+Es importante tener en cuenta que Python no sobrecarga el operador \texttt{+} para concatenar cadenas con otros tipos de datos, como números por ejemplo. Si intentamos algo como \texttt{'abc'+5} se disparará una excepción de tipo \texttt{TypeError} en tiempo de ejecución, recordándonos que sólo se pueden concatenar cadenas con cadenas.
+
+\subsection{Repetición}
+
+En caso de que queramos repetir una cadena una determinada cantidad de veces, podemos usar el operador \texttt{*}, que opera una cadena con un entero:
+
+\begin{lstlisting}
+s = 'Spam'*42 # repite 42 veces la cadena 'Spam' 
+print(s)
+\end{lstlisting}
+
+\subsection{Longitud}
+
+La longitud de una secuencia se puede conocer mediante la función \texttt{len()}:
+
+\begin{lstlisting}
+s = 'abc'
+print(len(s)) # imprime 3
+\end{lstlisting}
+
+\subsection{Indexación}
+
+Podemos acceder a los elementos de una cadena usando su posición mediante la operación de indexación, que tiene una sintaxis como la de C:
+
+\begin{lstlisting}
+s = 'spam'
+print(s[0],s[1],s[2],s[3])
+\end{lstlisting}
+
+La indexación especifica entre corchetes el desplazamiento desde el comienzo de la cadena, de modo que el primer elemento se indexa con el índice \texttt{0}. A diferencia de C, en Python podemos también acceder a los elementos de las secuencias usando un desplazamiento negativo. En este caso se entiende que este desplazamiento se resta a la longitud de la cadena para acceder al elemento:
+
+\begin{lstlisting}
+s = 'spam'
+print(s[-1],s[-2],s[-3],s[-4]) 
+\end{lstlisting}
+
+Si se intenta acceder a una posición de la secuencia que no existe, saltará una excepción de tipo \texttt{IndexError} en tiempo de ejecución, informándonos de un intento de acceso fuera de rango.
+
+Para comprobar que una cadena es \emph{inmutable}, podemos intentar hacer un acceso para modificar alguna de sus posiciones:
+
+\begin{lstlisting}
+s = 'spam'
+s[0] = 'S'
+\end{lstlisting}
+
+El resultado será otra excepción, en este caso de tipo \texttt{TypeError}, que nos indica que las cadenas no soportan la asignación de elementos.
+
+\subsection{Troceado}
+
+La operación de troceado básica permite extraer una sección contingua de elementos de la secuencia. Si \texttt{S} es una secuencia, el troceado se realiza con la sintaxis \texttt{S[i:j]}, donde \texttt{i} es el índice de la primera posición extraída y \texttt{j-1} el de la última posición extraída. Por ejemplo:
+
+\begin{lstlisting}
+s = 'spam'
+s = 'S'+s[1:4]  # genera 'Spam'
+\end{lstlisting}
+
+Tanto el índice \texttt{i} como el \texttt{j} se pueden omitir en la operación de troceado. Si se omite \texttt{i}, se extrae desde la posición 0, mientras que si se omite \texttt{j}, se extrae hasta el final de la cadena. También es posible usar índices negativos en la operación de troceado.
+
+Una versión extendida de la operación de troceado permite indicar un parámetro más: el \emph{paso} o intervalo entre los elementos que se extraen. En la versión básica, este paso es +1. La versión extendida utiliza la sintaxis \texttt{S[i:j:k]}, donde \texttt{i} y \texttt{j} tienen la misma interpretación que en la versión básica, y \texttt{k} indica el paso entre los elementos extraídos. Por ejemplo:
+
+\begin{lstlisting}
+s = 'abcdefghijklmnop'
+print(s[1:10:2])  # imprime 'bdfhj'
+\end{lstlisting} 
+
+Si el paso es negativo, la operación de troceado interpreta que los índices de comienzo y fin deben usarse de manera invertida:
+
+\begin{lstlisting}
+s = 'abcdefghijklmnop'
+print(s[5:1:-1])  # imprime 'fedc'
+\end{lstlisting} 
+
+\subsection{Conversión a cadena}
+
+En algunas ocasiones será necesario convertir un número u otro tipo de dato a cadena. Aunque en breve veremos una herramienta potente de Python para el formateo de cadenas, una primera alternativa para realizar la conversión a cadena es usar la función \texttt{str()}:
+
+\begin{lstlisting}
+s = 'abc' + str(5) # forma la cadena 'abc5'
+print(s)
+\end{lstlisting}
+
+\subsection{Conversiones de caracteres}
+
+En Python no existe un tipo de dato para representar a un carácter. En su lugar se puede emplear una cadena de un único carácter. Para trabajar con el código numérico asociado a cada carácter, podemos emplear las funciones \texttt{ord()} y \texttt{chr()}. La primera recibe como argumento una cadena de un único carácter y devuelve su código numérico. La segunda realiza la operación contraria:
+
+\begin{lstlisting}
+c = ord('ñ')
+print(c) # imprime 241 
+s = chr(c)
+print(s) # imprime ñ
+\end{lstlisting}
+
+\subsection{Iteración con cadenas}
+
+Recuerda que, al tratar las sentencias \texttt{for-in} en la sección \ref{sec:sentenciaFor}, la veíamos aplicada a una cadena para poder hacer una iteración entre sus caracteres:
+
+\begin{lstlisting}
+a = 0
+for c in 'supercalifragilisticoespialidoso':
+	print(a,c)
+	a += 1
+\end{lstlisting}
+
+
+\subsection{Comprobación de subcadena}
+
+Suele resultar muy útil comprobar si una cadena es subcadena de otra. Y en general, resulta útil saber si una secuencia es subsecuencia de otra. Por esta razón, el lenguaje Python ofrece el operador \texttt{in} para realizar esta comprobación, devolviendo un valor \texttt{True} o \texttt{False}:
+
+\begin{lstlisting}
+sub = 'fragil'
+if sub in 'supercalifragilisticoespialidoso':
+    print('La contiene')
+\end{lstlisting}
+
+\section{Métodos de procesado de cadenas}
+
+Python 3.7 ofrece 45 métodos para realizar operaciones comunes con cadenas. Todos los métodos se invocan sobre la cadena en la que se quiere realizar la operación correspondiente. A continuación se describen los más importantes. Para una consulta más extensa, se puede acceder a la dirección \url{https://docs.python.org/3.7/library/stdtypes.html#string-methods}.
+
+\subsection{Métodos de búsqueda y sustitución}
+
+El modo más genérico de realizar búsquedas y sustituciones en cadenas es mediante el uso de expresiones regulares, que trataremos más adelante. Sin embargo, en algunos casos sencillos se pueden emplear algunos métodos de las cadenas.
+
+En cuanto a los métodos de búsqueda, los más relevantes son:
+\begin{itemize}
+	\item \texttt{str.find(sub[, start[, end]])}: devuelve la posición menor en la que se localiza la subcadena \texttt{sub} dentro de la cadena \texttt{str}, especificando opcionalmente la posición de comienzo \texttt{start} y de fin \texttt{end} del trozo de la cadena en el que se realiza la comprobación. Devuelve -1 si no se encuentra ninguna ocurrencia de la subcadena.
+	\item \texttt{str.rfind(sub[, start[, end]])}: realiza la misma operación que \texttt{find} pero devuelve la posición mayor en la que se localiza la subcadena.
+	\item \texttt{str.count(sub[, start[, end]])}: cuenta el número de ocurrencias de la subcadena \texttt{sub} en la cadena \texttt{str}, especificando opcionalmente la posición de comienzo \texttt{start} y de fin \texttt{end} del trozo de la cadena en el que se realiza el conteo.
+	\item \texttt{str.startswith(prefix[, start[, end]])}: devuelve \texttt{True} si la cadena \texttt{str} comienza con el prefijo \texttt{prefix}, o \texttt{False} en caso contrario. Es posible especificar opcionalmente la posición de comienzo \texttt{start} y de fin \texttt{end} del trozo de la cadena en el que se realiza la comprobación.
+	\item \texttt{str.endswith(suffix[, start[, end]])}: es similar al método anterior, pero sirve para realizar comprobaciones con sufijos de la cadena.
+\end{itemize}
+
+Para realizar sustituciones, podemos emplear los métodos:
+\begin{itemize}
+	\item \texttt{str.replace(old, new[, count])}: devuelve una nueva cadena en la que las ocurrencias de la subcadena \texttt{old} en \texttt{str} se sustituyen por la subcadena \texttt{new}. Si se especifica el argumento \texttt{count}, éste indica el número máximo de ocurrencias que se sustituirán, empezando por la izquierda de la cadena \texttt{str}.
+	\item \texttt{str.strip([chars])}: devuelve una nueva cadena en la que se eliminan los caracteres del comienzo y final de \texttt{str} que coincidan con los contenidos en la cadena \texttt{chars}. Si no se especifica \texttt{chars}, se eliminan los espacios en blanco al comienzo y final de \texttt{str}.
+	\item \texttt{str.lstrip([chars])}: es una versión del método anterior en la que sólo se eliminan caracteres del comienzo.
+	\item \texttt{str.rstrip([chars])}: es una versión del método \texttt{strip()} en la que sólo se eliminan caracteres del final.
+\end{itemize}
+
+\subsection{Métodos de fragmentación}
+
+Para fragmentar una cadena en subcadenas se pueden emplear los métodos:
+\begin{itemize}
+	\item \texttt{str.split(sep=None, maxsplit=-1)}: devuelve una lista\footnote{En el siguiente capítulo se describe el funcionamiento de las listas de Python.} de subcadenas que resultan de fragmentar la cadena \texttt{str} usando la subcadena \texttt{sep} como separador. Si no se especifica \texttt{sep}, la separación se realiza en los espacios en blanco. El separador se elimina de las subcadenas fragmentadas. El argumento \texttt{maxsplit} permite indicar el número máximo de cortes que se llevarán a cabo en la cadena.
+	\item \texttt{str.splitlines([keepends])}: realiza la misma operación que el método anterior, pero la fragmentación se realiza en los saltos de línea. Si se especifica \texttt{keepends} y su valor es \texttt{True}, entonces los saltos de línea se conservan en las subcadenas fragmentadas.
+\end{itemize}
+
+\section{Formateo de cadenas}
+
+Hemos dejado en una sección aparte una de las herramientas más potentes incluidas en el lenguaje Python: el formateo de cadenas. Curiosamente, también es un caso en el que el zen de Python salta por los aires y deja de cumplirse clamorosamente: ¡hay dos modos de formatear cadenas! El modo más tradicional, con el cual hay miles y miles de líneas de código escritas, se basa en la filosofía de \texttt{printf} de C, y se denomina \emph{expresiones de formateo de cadenas}. El segundo modo, aparecido en la versión 3.0 del lenguaje, sigue la corriente de C\#/.NET y se apoya en el \emph{método de formato de cadenas} \texttt{format()}, un método que se invoca sobre una cadena, de manera similar a los vistos en la sección anterior.
+
+\subsection{Expresiones de formateo de cadenas}\label{sec:expresionesFormateo}
+
+Una expresión de formateo de cadenas tiene la sintaxis:
+
+\texttt{cadena\_de\_formato \% (arg1,...,argn)}
+
+El operador \texttt{\%} tiene a su izquierda una cadena de texto con el formato especificado en una notación similar a \texttt{printf}, incluyendo localizadores en los que se insertan los valores de una serie de argumentos, que aparecen en el lado derecho entre paréntesis y separados por comas. Los argumentos pueden ser de cualquier tipo. El resultado de la expresión de formateo es una nueva cadena en la que el formato queda aplicado a los argumentos. A diferencia de C, las expresiones de formateo de cadenas se pueden emplear en cualquier lugar en el que se puede usar una cadena, como puede ser el lado derecho de una asignación.
+
+Las expresiones de formateo nos simplifican la vida en el sentido de que nos ahorran realizar un montón de operaciones de concatenado de cadenas y conversión de distintos tipos de dato a cadenas. Veamos un ejemplo sencillo:
+\begin{lstlisting}
+n = 2
+s = 'Hay %d maneras de %s una cadena en Python' % (n,'formatear')
+print(s)
+\end{lstlisting}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{ll}
+	Código & Significado\\
+	\hline\hline
+	s & Cadena (se aplica sobre cualquier tipo como una llamada a \texttt{str()})\\
+	c & Carácter (\texttt{int} o cadena de un carácter)\\
+	d & Entero con signo en base 10\\
+	i & Igual que d (herencia de C)\\
+	u & Obsoleto: es equivalente a d\\
+	o & Entero con signo en base 8\\
+	x & Entero con signo en base 16\\
+	X & Igual que x pero con letras mayúsculas\\
+	e & Real con exponente en minúsculas\\
+	E & Real con exponente en mayúsculas\\
+	f & Real decimal (sin exponente)\\
+	F & Igual que f\\
+	g & Real escrito de la forma más compacta entre \%e y \%f\\
+	G & Real escrito de la forma más compacta entre \%E y \%F\\
+	\% & Literal \%\\
+	\hline
+\end{tabular}
+\caption{Códigos para expresiones de formato de cadenas}
+\label{tab:formatoCadenas}
+\end{center}
+\end{table}
+
+Los códigos usados para indicar el formato a la derecha de \% aparecen indicados en la tabla \ref{tab:formatoCadenas}. La especificación de los formatos puede precisarse algo más usando una indicación general que sigue la siguiente sintaxis:
+
+\texttt{\%[(clave)][flags][width][.precisión]código}. 
+
+El código es uno de los indicados en la tabla \ref{tab:formatoCadenas}. Entre el carácter \texttt{\%} y el código se pueden especificar algunos de los parámetros siguientes:
+\begin{itemize}
+	\item Una \texttt{clave} para expresar qué valor se debe de sustituir en esta posición de formateo procedente de un diccionario\footnote{Al igual que con las listas, el siguiente capítulo describe el uso de diccionarios en Python.}. 
+	\item Una lista de \texttt{flags} o indicadores que expresan si se debe usar justificación a la izquierda (indicado con \texttt{-}), símbolo numérico (indicado con \texttt{+}), un espacio en blanco antes de un número positivo y un menos antes de un número negativo (expresado con un espacio en blanco), y un relleno de ceros (indicado con \texttt{0}).
+	\item La longitud mínima total del texto que ocupa la posición de formateo.
+	\item El número de dígitos de precisión después del punto decimal en los números reales.
+\end{itemize}
+
+Vamos a probar algunas de las posibilidades de las expresiones de formateo con unos ejemplos. Empezamos por el uso de enteros, con y sin indicación de tamaño mínimo, justificación a la izquierda y relleno de ceros:
+
+\begin{lstlisting}
+n = 9876
+s = '...%d...%-6d...%06d' % (n,n,n)
+print(s) # Imprime '...9876...9876  ...009876'
+\end{lstlisting}
+
+Probamos ahora los códigos de formato para números reales:
+
+\begin{lstlisting}
+x = 1.23456789
+s = '%e | %f | %g' % (x,x,x)
+print(s) # Imprime '1.234568e+00 | 1.234568 | 1.23457'
+\end{lstlisting}
+
+El uso de los parámetros de formateo da mucho juego cuando se emplean números reales:
+
+\begin{lstlisting}
+x = 1.23456789
+s = '%-6.2f | %05.2f | %+06.1f' % (x, x, x)
+print(s) # Imprime '1.23  | 01.23 | +001.2'
+\end{lstlisting}
+
+Por último, vamos a ver algún ejemplo del uso del parámetro \emph{clave} en las expresiones de formato. Supongamos que disponemos de la información de una tabla de una base de datos que nos indica una cantidad de productos y una descripción de cada producto. Un registro de esta tabla se puede describir completamente como una estructura de información que especifica el valor de cada campo (cantidad y descripción). En Python se puede especificar este tipo de estructura usando un diccionario. Los diccionarios se especifican entre llaves de la siguiente forma:
+
+\begin{lstlisting}
+dic = {'clave1' : valor1, ..., 'claveN' : valorN}
+\end{lstlisting}
+
+Podemos usar diccionarios en expresiones de formato especificando en las posiciones de formateo la clave del campo cuyo valor se sustituye en la posición. Por ejemplo:
+
+\begin{lstlisting}
+s = '%(uds)d unidades de %(prod)s' % {'uds' : 5, 'prod' : 'spam'}
+print(s) # Imprime '5 unidades de spam'
+\end{lstlisting}
+
+Esta utilidad puede resultar muy interesante en combinación con la función \texttt{vars()} de Python. Esta función devuelve un diccionario con las variables y valores definidos en el lugar en que se invoca. De este modo, podemos construir cadenas con los valores de las variables del ámbito en el que se encuentra la ejecución:
+
+\begin{lstlisting}
+nombre = 'Mercedes'
+grupo = 1
+edad = 20
+s = '%(nombre)s es profesora del grupo %(grupo)d' % vars()
+print(s) # Imprime 'Mercedes es profesora del grupo 3'
+\end{lstlisting}
+
+\subsection{Método de formateo de cadenas}
+
+No vamos a entrar en mucho detalle, porque con lo que hemos visto en el apartado anterior tenemos más que suficiente para las prácticas de Autómatas y Lenguajes Formales. Pero para completar la descripción de los dos modos de formatear cadenas en Python, vamos a describir brevemente el método \texttt{format()}. Se trata de un método que se aplica sobre cadenas. La cadena a la que se aplica va a contener el formato que queremos producir, especificando las posiciones de formateo de dos modos: con números o con nombres de parámetros. Los argumentos del método \texttt{format()} son los valores que se irán colocando en las posiciones de formateo. Un ejemplo del uso de números para las posiciones de formato:
+
+\begin{lstlisting}
+plantilla = '{0}, {1} y {2}'
+s = plantilla.format('spam', 'jamón', 'huevos')
+print(s) # Imprime 'spam, jamón y huevos'
+\end{lstlisting}
+
+Y un ejemplo similar usando nombres en las posiciones de formateo:
+
+\begin{lstlisting}
+plantilla = '{entrante}, {primero} y {segundo}'
+s = plantilla.format(entrante='spam', primero='jamón', segundo='huevos')
+print(s) # Imprime 'spam, jamón y huevos'
+\end{lstlisting}
+
+Esto es sólo una pequeña pincelada de la utilización del método \texttt{format()}. Te recomendamos que, si tienes interés, le eches un vistazo a la extensa documentación de Python sobre esta técnica de formateo: \url{https://docs.python.org/3.7/library/string.html#formatstrings}. ¡Buen provecho!

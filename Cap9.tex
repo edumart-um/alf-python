@@ -1,0 +1,237 @@
+%!TEX root = Python.tex
+
+\chapter{Expresiones regulares}
+
+\lettrine[lines=5]{M}{uchas} de las aplicaciones que aprovechan de forma práctica los principios teóricos de la asignatura Autómatas y Lenguajes Formales, emplean \emph{expresiones regulares} (ER) para la validación, búsqueda y sustitución de cadenas de caracteres. La validación la podemos encontrar en cualquier aplicación que reciba una entrada que puede contener errores de formato, como los campos de un formulario rellenados por una persona; un DNI o un código bancario IBAN tienen una estructura perfectamente definida que se debe verificar antes de aceptar la entrada del usuario. Las búsquedas forman parte de infinidad de aplicaciones, como los procesadores de texto, las herramientas de consulta de bases de datos o los \emph{spiders} que recorren la web o las redes sociales y extraen información que aparece en determinados campos de páginas HTML o contenidos XML. Por último, las operaciones de sustitución son la base para la construcción de traductores, es decir, programas que reciben una entrada en un determinado formato y generan la salida en otro formato. La interconexión de muchas aplicaciones desarrolladas por empresas distintas sería imposible sin estas traducciones entre distintos formatos.
+
+En este capítulo analizamos cómo emplear las expresiones regulares extendidas en Python con la finalidad de realizar las tres operaciones indicadas anteriormente. Como complemento a este capítulo, conviene que tengas a mano el documento que puedes encontrar en el Aula Virtual \texttt{Tutorial\_sintaxis\_ER.pdf}.
+
+\section{Paquetes \texttt{re} y \texttt{regex}}
+
+Toda la funcionalidad de Python relativa a expresiones regulares se encuentra en uno de los paquetes estándares de la distribución de Python, llamado \texttt{re}. Vaya por adelantado la dirección en la que puedes resolver todas las dudas que se te ocurran, y más, sobre el funcionamiento de este paquete: \url{https://docs.python.org/3/library/re.html}. 
+
+Sin embargo, el paquete \texttt{re} no tiene soporte para expresiones regulares del tipo \texttt{$\backslash$p\{L\}}. Por esta razón, conviene que instalemos el paquete \texttt{regex} mediante la herramienta \texttt{pip} en nuestro sistema:
+
+\begin{lstlisting}
+pip install regex
+\end{lstlisting}
+
+Todos los métodos definidos en el paquete \texttt{re} están en \texttt{regex}, ampliando el soporte de expresiones regulares. Puedes hacer así la importación del paquete \texttt{regex}:
+
+\begin{lstlisting}
+import regex as re
+\end{lstlisting}
+
+Y puedes encontrar informacion sobre \texttt{regex} aquí: \url{https://pypi.org/project/regex/}.
+
+\subsection{Representación de la expresión regular}
+
+En primer lugar, y a riesgo de ser pesados, conviene recordaros que las expresiones regulares hay que representarlas en Python con cadenas \emph{raw}, ya que es habitual usar contrabarras en la notación de expresiones regulares extendida:
+
+\begin{lstlisting}
+patrón_dni = r'\d{8}[A-Z]' # Patrón para DNI
+\end{lstlisting}
+
+\subsection{Compilación de la expresión regular}
+
+Antes de usar una expresión regular conviene compilarla. El proceso de compilación implica el análisis de la expresión regular y su conversión a un autómata finito. Como es un proceso costoso, especialmente en el caso de expresiones regulares complejas, hay que evitar en la medida de lo posible la repetición de la operación de compilación de una misma expresión regular:
+
+\begin{lstlisting}
+patrón_dni = r'\d{8}[A-Z]' # Patrón para DNI
+er_dni = re.compile(patrón_dni) # Objeto ER
+\end{lstlisting}
+
+\subsection{Validación de cadenas}
+
+Para comprobar que una cadena completa se valida con una expresión regular, disponemos del método \texttt{fullmatch()} que podemos invocar sobre el objeto ER previamente compilado:
+
+\begin{lstlisting}
+import regex as re
+
+if __name__ == '__main__':
+    patrón_dni = r'\d{8}[A-Z]' # Patrón para DNI
+    er_dni = re.compile(patrón_dni) # Objeto ER
+    cadena = input('Introduce un DNI: ')
+    result = er_dni.fullmatch(cadena.rstrip())
+    if result:
+        print('Cadena validada')
+    else:
+        print('Cadena rechazada')
+\end{lstlisting}
+
+El resultado del método \texttt{fullmatch()} es \texttt{None} en caso de que la cadena no se valide, y en caso de que sí se valide es un objeto \texttt{Match}. La utilidad de este objeto la veremos inmediatamente con otros métodos. En el caso de \texttt{fullmatch()}, al hacer una comprobación sí/no, únicamente sirve a modo de resultado booleano.
+
+Python incluye un segundo método de validación de cadenas algo más laxo que \texttt{fullmatch()}: el método \texttt{match()} valida si algún prefijo de la cadena proporcionada como argumento verifica el patrón de la ER. En el ejemplo anterior, si introducimos \texttt{12345678ALF}, también se devuelve un objeto \texttt{Match}. En este caso, podemos saber el prefijo que ha verificado la ER usando los métodos \texttt{start()} y \texttt{end()} del objeto \texttt{Match} devuelto:
+
+\begin{lstlisting}
+result = er_dni.match(cadena.rstrip())
+if result:
+    print('Validado',cadena[result.start():result.end()])
+\end{lstlisting}
+
+Opcionalmente, los métodos \texttt{fullmatch()} y \texttt{match()} pueden tener otros dos parámetros más para indicar desde qué posición de inicio y hasta qué posición de final de la cadena se debe hacer la verificación:
+
+\begin{lstlisting}
+er_digitos = re.compile(r'\d+')
+result = er_digitos.fullmatch('abc123def',3,6)
+\end{lstlisting}
+
+
+\subsection{Búsqueda de cadenas}
+
+Tratamos a continuación dos formas de buscar subcadenas que cumplen un determinado patrón dentro de una cadena mayor. 
+
+Si sólo nos interesa encontrar la primera aparición de la subcadena, se puede emplear el método \texttt{search()} sobre la expresión regular compilada. Este método recibe como argumento la cadena en la que se busca y devuelve un objeto \emph{match} en caso de que se haya encontrado una aparición del patrón, o \texttt{None} en caso de que no aparezca:
+
+\begin{lstlisting}
+er_digitos = re.compile(r'\d+')
+n = 1
+cadena = 'AB 12 DE 34'
+m = er_digitos.search(cadena)
+if m:
+	print('Resultado %d: %s' % (n,cadena[r.start():r.end()]))
+else:
+	print('No encontrado')
+\end{lstlisting}
+
+Para localizar las subcadenas no solapadas que cumplen un determinado patrón dentro de una cadena mayor, haciendo un recorrido de izquierda a derecha de la misma, lo más conveniente es usar un iterador que podemos obtener con el método \texttt{finditer()}:
+
+\begin{lstlisting}
+er_digitos = re.compile(r'\d+')
+n = 1
+cadena = 'AB 12 DE 34'
+for r in er_digitos.finditer(cadena):
+	print('Resultado %d: %s' % (n,cadena[r.start():r.end()]))
+	n += 1
+\end{lstlisting}
+
+El iterador asigna a la variable indicada en el \texttt{for} un objeto \texttt{Match}. Al igual que con los métodos \texttt{fullmatch()} y \texttt{match()}, los métodos \texttt{search()} y \texttt{finditer()} pueden tener dos parámetros opcionales para indicar la posición de inicio y fin de la búsqueda.
+
+\subsection{Sustituciones}
+
+Otra operación común que se puede implementar fácilmente con la ayuda de las expresiones regulares es la búsqueda y sustitución de cadenas. En Python se puede usar el método \texttt{sub()} para esta operación. El primer argumento es la cadena de remplazo que sustituye a las ocurrencias de la ER; el segundo argumento es la cadena sobre la que se realiza la búsqueda y sustitución; un tercer argumento permite indicar el número máximo de sustituciones (si no se indica, no hay número máximo). El resultado de la llamada a \texttt{sub()} es la cadena con las sustituciones ya realizadas:
+
+\begin{lstlisting}
+er_digitos = re.compile(r'\d+')
+cadena = 'AB 12 DE 34'
+nueva = er_digitos.sub('-',cadena)
+print(nueva) # Imprime 'AB - DE -'
+\end{lstlisting}
+
+Si no es posible realizar ninguna sustitución, se devuelve la misma cadena que se pasó como segundo argumento.
+
+Una posibilidad bastante útil del método \texttt{sub()} consiste en que el primer argumento, en lugar de ser una cadena estática, sea el nombre de un método. Este método recibirá como argumento un objeto \texttt{Match} correspondiente a la coincidencia previa a la sustitución, y debe devolver la cadena que lo sustituye. Por ejemplo:
+
+\begin{lstlisting}
+def sust(m):
+    suma = 0
+    for i in m.group(0):
+        suma += int(i)
+    return str(suma) 
+
+if __name__ == '__main__':
+    er_digitos = re.compile(r'\d+')
+    cadena = 'AB 12 DE 34'
+    nueva = er_digitos.sub(sust,cadena)
+    print(nueva) # Imprime 'AB 3 DE 7'
+\end{lstlisting}
+
+El método \texttt{sust()} llama al método \texttt{group(0)} el objeto Match para recuperar la cadena que se va a sustituir. En la siguiente sección se trata en detalle el uso de grupos.
+
+\section{Grupos}
+
+Una expresión regular puede definir grupos usando paréntesis. Por ejemplo:
+
+\begin{lstlisting}
+patrón_dni = r'(\d{8})([A-Z])' # Patrón para DNI con dos grupos
+\end{lstlisting}
+
+La expresión regular anterior define dos grupos, o lo que es lo mismo, dos fragmentos de la expresión regular global indicados entre paréntesis: los dígitos del DNI forman el primer grupo, y la letra mayúscula forma el segundo grupo. Cualquiera de las operaciones vistas en la sección anterior, de validación, búsqueda y sustitución, puede aprovechar el uso de los grupos. 
+
+\subsection{Grupos en validación y búsqueda}
+
+En el caso de las operaciones de validación y búsqueda, podemos extraer la porción de la cadena de entrada que se ha reconocido con cada grupo mediante el objeto \texttt{Match} devuelto por la operación, y el método \texttt{group()} del mismo. Este método recibe como argumento un entero. Si es 0, el método devuelve la cadena completa reconocida con toda la expresión regular. Si es 1, devuelve la porción reconocida a través del primer grupo, y así sucesivamente:
+
+\begin{lstlisting}
+patrón_dni = r'(\d{8})([A-Z])' # Patrón para DNI con dos grupos
+er_dni = re.compile(patrón_dni) # Objeto ER
+cadena = input('Introduce un DNI: ')
+result = er_dni.fullmatch(cadena.rstrip())
+if result:
+    print('DNI',result.group(0),'validado')
+    print('Dígitos:',result.group(1))
+    print('Letras:',result.group(2))
+\end{lstlisting}
+
+Dependiendo de la expresión regular, no todos los grupos pueden haber sido usados en la validación de la cadena. En caso de que un grupo no se use durante la validación, el método \texttt{group()} devuelve \texttt{None}. Por ejemplo:
+
+\begin{lstlisting}
+patrón = r'(\d+)|(\p{L}+)|([ \r\t\n]+)'
+er = re.compile(patrón)
+cadena = 'AB 12 DE 34'
+for r in er.finditer(cadena):
+    if r.group(1):
+        print('Dígitos',r.group(1))
+    elif r.group(2):
+        print('Letras',r.group(2))
+    else:
+        print('Espacios en blanco')
+\end{lstlisting}
+
+Como alternativa al método \texttt{group()} se puede usar el objeto \texttt{Match} con indexación:
+
+\begin{lstlisting}
+patrón = r'(\d+)|(\p{L}+)|([ \r\t\n]+)'
+er = re.compile(patrón)
+cadena = 'AB 12 DE 34'
+for r in er.finditer(cadena):
+    if r[1]:
+        print('Dígitos',r.group(1))
+    elif r[2]:
+        print('Letras',r.group(2))
+    else:
+        print('Espacios en blanco')
+\end{lstlisting}
+
+\subsection{Grupos en sustituciones}
+
+Las cadenas de remplazo usadas en las sustituciones pueden usar la información de los grupos obtenida en la operación de búsqueda previa al remplazo. La subcadena reconocida a través del grupo \texttt{N} se puede referenciar desde la cadena de remplazo mediante \texttt{$\backslash$N}:
+
+\begin{lstlisting}
+er_digitos = re.compile(r'[A-Z]{2}(\d+)')
+cadena = 'AB12 DE34'
+nueva = er_digitos.sub(r'-\1-',cadena)
+print(nueva) # Imprime '-12- -34-'
+\end{lstlisting}
+
+\subsection{Otras formas de referenciar grupos}
+
+Si una expresión regular es muy extensa, es posible que necesitemos usar paréntesis no sólo para denotar grupos, sino simplemente para agrupar partes de la expresión regular con el fin de que los operadores de la misma se combinen como nosotros queramos. Puede llegar a ser una auténtica pesadilla ir contando los paréntesis para ver cuáles representan un grupo y cuáles no. 
+
+Una primera forma de simplificar el problema consiste en marcar de una forma especial los paréntesis que \emph{no} denotan un grupo. Esto se consigue usando la notación \texttt{(?:...)}, es decir, añadiendo \texttt{?:} detrás del paréntesis de apertura. Estos paréntesis no cuentan a la hora de enumerar los grupos:
+
+\begin{lstlisting}
+patrón = r'((?:a|b|c)+)|(\d+)'
+er = re.compile(patrón)
+cadena = 'aaba12ab'
+for r in er.finditer(cadena):
+    if r.group(1):
+        print('Letras:'+r.group(1))
+    elif r.group(2):
+        print('Números:'+r.group(2))
+\end{lstlisting}
+
+Una segunda forma de abordar el uso de grupos consiste en darles un nombre, en lugar de un número que depende del orden de apertura y cierre de paréntesis. Los nombres se indican con la notación \texttt{(?P<nombre>...)}. El método \texttt{group()} del objeto \texttt{Matcher} puede recibir como argumento el nombre del grupo que queremos recuperar:
+
+\begin{lstlisting}
+patrón_dni = r'(?P<digitos>\d{8})(?P<letra>[A-Z])' 
+er_dni = re.compile(patrón_dni) # Objeto ER
+cadena = input('Introduce un DNI: ')
+result = er_dni.fullmatch(cadena.rstrip())
+if result:
+    print('DNI',result.group(0),'validado')
+    print('Dígitos:',result.group('digitos'))
+    print('Letras:',result.group('letra'))
+\end{lstlisting}
+
+En las cadenas de sustitución podemos usar \texttt{$\backslash$g<nombre>} como referencia a un grupo nombrado en la expresión regular.

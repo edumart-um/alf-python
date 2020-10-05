@@ -1,0 +1,770 @@
+%!TEX root = Python.tex
+
+\chapter{Fundamentos de Python}
+
+\lettrine[lines=5]{C}{on} el entorno de desarrollo ya configurado, y partiendo del proyecto \emph{helloWorld} creado al final del capítulo anterior, podemos empezar a estudiar el funcionamiento del lenguaje. No es nada original el comienzo que proponemos, porque consiste en el típico programa que imprime \emph{¡Hola mundo!} Algunos manuales de Python introducen innumerables características del lenguaje basándose en el uso interactivo del intérprete, antes de dar la pauta sobre cómo escribir un programa ejecutable. No parece buena idea para estudiantes de Informática que necesitarán escribir aplicaciones desde el comienzo. Así que seguiremos el enfoque clásico.
+
+Pero antes de comenzar, es necesaria una pequeña aclaración sobre la terminología de Python: llamaremos \emph{módulo} a un fichero fuente Python con extensión \texttt{.py}. Este módulo también tendrá un fichero asociado con extensión \texttt{.pyc} una vez que haya sido compilado. Cuando un programa empiece a tener cierto tamaño, será conveniente dividir su código en varios módulos, pero veremos que existe una forma sencilla de reutilizar las funciones de unos módulos en otros. Por otra parte, llamaremos \emph{paquete} a un conjunto de módulos con alguna funcionalidad común. Un paquete es lo mismo que una librería en otros lenguajes de programación y, de hecho, emplearemos indistintamente ambos términos.
+
+\section{Un programa básico}\label{sec:programa_basico}
+
+Un programa básico de Python necesita, al menos, un módulo. Esto es de una lógica aplastante. Los pasos que necesitamos dar desde Eclipse para crear un nuevo módulo son los siguientes:
+
+\begin{enumerate}
+	\item Selecciona el proyecto en el que quieres crear el nuevo módulo. Supongamos que es \emph{helloWorld}.
+	\item En el menú \emph{File}, usa la opción \emph{New} y la subopción \emph{PyDev Module}.
+	\item Deja vacío el campo \emph{package}, que nos serviría para crear un módulo dentro de un paquete (todo a su tiempo).
+	\item Indica el nombre del módulo, que puede ser \emph{hello}.
+	\item Eclipse nos ofrece varias plantillas (templates) que pueden servir como base para la creación del nuevo módulo. Escoge \emph{Module: Main}.
+\end{enumerate}
+
+Después de lo anterior, Eclipse nos muestra un fichero con el siguiente contenido:
+
+\begin{lstlisting}
+'''
+Created on 5 ago. 2018
+
+@author: jmjuarez
+'''
+
+if __name__ == '__main__':
+    pass
+\end{lstlisting}
+
+\subsection{Comentarios en Python}\label{sec:comentarios}
+
+Hay unas cuantas cosas raras en el fichero. Para empezar, que un tal \emph{jmjuarez} esté el 5 de agosto escribiendo un manual de Python. Pero vayamos a lo importante. En primer lugar, entre las líneas 1 y 5 aparece un comentario limitado por las dos marcas \texttt{'{}'{}'{}}. Es un comentario que puede ocupar varias líneas y sirve para documentar el código. Alternativamente se podría haber usado como limitador del comentario \texttt{"{}"{}"{}}. Trataremos la documentación de código Python más adelante. 
+
+Otra forma de poner comentarios en un programa Python es usando la marca \texttt{\#}. Permite generar comentarios de una línea, o más concretamente, desde la marca hasta el final de la línea.
+
+\subsection{Punto de entrada de un módulo}
+
+Lo siguiente que debe resultar extraño es la línea 7 del código anterior. Para ir aclarando cosas, este código no tiene ninguna función. En Python puedes escribir código fuera de funciones. Esta es una característica de muchos lenguajes interpretados. Esto significa que, al ejecutar el módulo anterior, se alcanza directamente la línea 7, que contiene un \texttt{if}. Vamos posponiendo cosas sin parar, pero una vez más, queda para un apartado posterior la explicación de las sentencias de control de flujo. 
+
+Hay que volver a la idea de módulo para explicar bien la funcionalidad de esa línea. En Python, cualquier módulo puede ser un punto de entrada al programa, es decir, cualquier módulo puede tener el código \emph{principal} del programa. Esto no sucede con C o C++. De hecho, si pusiésemos la función \emph{main()} en todos los ficheros de un proyecto en C, el compilador se quejaría diciendo que la función está repetida por todos sitios.
+
+La explicación de por qué en Python podemos tener múltiples puntos de entrada es sencilla: el lenguaje se pensó para desarrollar \emph{scripts}, es decir, pequeños programas autocontenidos en un módulo. Pero tranquilo, que se puede reutilizar el código de un módulo en otro. Una ventaja de esta característica del lenguaje es que facilita el desarrollo de aplicaciones basado en pruebas. En cada módulo, puedo añadir un código de prueba de las funciones de ese módulo, y podré verificar si todo va bien seleccionando el módulo y ejecutándolo en Eclipse. Cuando haya hecho todas las verificaciones oportunas, podré pasar a usar el módulo importando sus funciones en otro módulo, y así sucesivamente. Siempre habrá, claro está, un módulo final con el programa principal general que servirá para lanzar toda la aplicación.
+
+Y por fin, la explicación de la misteriosa línea 7: este doble uso de los módulos de Python se puede distinguir en tiempo de ejecución, usando la variable predefinida \texttt{\_\_name\_\_}. Esta variable toma el valor \texttt{\_\_main\_\_} cuando un módulo se ejecuta como punto de entrada principal. En Eclipse lo puedes hacer seleccionando el módulo y pulsando en el botón de ejecución; cuando un módulo se importa desde otro módulo para hacer llamadas a sus funciones, esta línea 7 también se ejecuta, pero la variable \texttt{\_\_name\_\_} toma como valor el nombre del módulo importado, de forma que no se ejecuta nada en este caso.
+
+En la línea 8, PyDev introduce la sentencia \texttt{pass}. ¡Esta sentencia no hace nada! Se puede colocar en una parte del código que, en algún momento, tendrá que ser completada. Por ahora, la sustituimos por una sentencia para imprimir \texttt{¡Hola Mundo!} con una llamada a la función \texttt{print}:
+
+\begin{lstlisting}
+'''
+Created on 5 ago. 2018
+
+@author: jmjuarez
+'''
+
+if __name__ == '__main__':
+    print('¡Hola Mundo!')
+\end{lstlisting}
+
+\subsection{Indentación}
+
+Queda una cosa más, de las raras, pendiente de comentar, que en un programa tan pequeño como \texttt{hello.py} no llama la atención, pero en uno grande sí lo haría: el hecho de tener que poner la llamada a la función \texttt{print} donde está, después de un \emph{tabulador}\footnote{En realidad, el tabulador se convierte en 4 espacios en blanco en un editor como Eclipse.} al comienzo de la línea 8. 
+
+Python no usa palabras clave como \texttt{begin} y \texttt{end} de Pascal, o signos como \texttt{\{} y \texttt{\}} de C y Java, para delimitar bloques de sentencias. ¡Python te obliga a que los delimites con tabuladores! No es válido un programa Python que no respete esa forma de escritura. Esto tiene una ventaja: el código resulta mucho más legible, y eso es algo que puede simplificar mucho la vida de los profesores que tienen que revisar las prácticas.
+
+Por cierto, la palabra \emph{indentación} que introduce esta sección no existe en español, la RAE te lo puede certificar. En su lugar se usa \emph{sangrado}, pero dada la extensión del uso de \emph{indentación}, y teniendo en cuenta que no queremos hacer un manual de Python excesivamente cruento\footnote{Ahora se entiende bien aquello de que \emph{la letra con sangre entra}, que en estos apuntes podríamos reescribir como \emph{Python con sangre entra}.}, nos permitimos la licencia de desobedecer a los reales académicos.
+
+En fin, nadie dijo que los comienzos fuesen fáciles. Pero ahora podemos seguir un camino algo más sistemático para hablar del lenguaje. El resto del capítulo lo dedicamos a esas cosas que tanto nos gusta estudiar cuando aprendemos un lenguaje nuevo: tipos de dato básicos, uso de variables, operadores y sus precedencias, estructuras de control, etcétera. Puedes ir probando todos los ejemplos de los siguientes apartados en el módulo \texttt{hello.py}, pero ¡acuérdate de los tabuladores!
+
+\section{Tipos básicos}\label{sec:tiposBasicos}
+
+\subsection{Enteros}
+
+Existen dos tipos de enteros en Python: \texttt{int} y \texttt{long}. Los primeros tienen una precisión de 32 bits (si el sistema es de 32 bits) o 64 bits (si es de 64). Los segundos, tienen precisión ilimitada, es decir, el único límite es la memoria de tu equipo. Por ejemplo, no hay problema en escribir:
+
+\begin{lstlisting}
+print(987987987987987987987987987987987987987+1)
+\end{lstlisting}
+
+Así que ya puedes programar esos cálculos astronómicos para los que no habías encontrado un lenguaje adecuado. No será necesario indicar si tu entero es \texttt{int} o \texttt{long}. Dependiendo de su tamaño, Python lo tratará de una forma u otra de manera implícita.
+
+Puedes especificar un signo al comienzo del entero, ¡incluido el positivo! También puedes usar una notación distinta de la base 10, añadiendo delante del entero el prefijo que denota la base, como \texttt{0b} para notación binaria, \texttt{0o} para octal y \texttt{0x} para hexadecimal. Las letras b, o y x pueden estar en mayúsculas.
+
+\begin{lstlisting}
+print(0b101)
+print(0o101)
+print(0x101)
+\end{lstlisting}
+
+\subsection{Reales}
+
+Puedes usar valores reales (flotantes) usando la notación clásica (parte entera, separador \texttt{.} y parte decimal), o bien la notación científica con el exponente indicado tras el caracter \texttt{e}:
+
+\begin{lstlisting}
+print(-3.1416)
+print(44.10e+3)
+print(7.5e-4)
+\end{lstlisting}
+
+La notación científica es la misma que usa Java, y está definida en el estándar \emph{IEEE 754}.
+
+\subsection{Complejos}
+
+Python es un lenguaje muy apreciado por los programadores que hacen cálculo científico. Y es perfectamente comprensible, porque además de poder hacer cálculos con enteros largos y reales con alta precisión, el lenguaje incluye como tipo básico a los números complejos, usando la notación \emph{<parte real>+<parte imaginaria>j}. En Python ganaron los físicos a los matemáticos en la notación de los complejos. Por ejemplo:
+
+\begin{lstlisting}
+print((1+3j)+(2+5j))
+\end{lstlisting}
+
+Podemos recuperar la parte real y la parte imaginaria del número complejo:
+
+\begin{lstlisting}
+z = 1+3j
+print(z.real)  # 1
+print(z.imag)  # 3
+\end{lstlisting}
+
+\subsection{Cadenas de caracteres}
+
+Python tiene múltiples formas de representar las cadenas de caracteres. Habrás observado que, en el ejemplo de \texttt{hello.py}, la cadena usada es \texttt{'¡Hola Mundo!'}. Igualmente se podría haber empleado \texttt{"¡Hola Mundo!"}. Lo importante es que, si empiezas la cadena con una comilla simple, debes terminarla con una comilla simple, y de forma similar con las comillas dobles.
+
+En realidad, hay una diferencia curiosa entre usar una comilla simple o doble para delimitar una cadena: si quieres que tu cadena incluya caracteres de comillas simples en su contenido, no hay problema, usas comillas dobles al comienzo y final, y viceversa:
+
+\begin{lstlisting}
+print("Esto es 'curioso', ¿no?")
+print('Vaya "rarezas" tiene Python')
+\end{lstlisting}
+
+Siempre es posible usar caracteres de escape dentro de las cadenas de caracteres, antecedidos con la contrabarra, como:
+
+\begin{lstlisting}
+print("Esto es una cadena al \"estilo\" de C\n")
+print("---\t---")
+\end{lstlisting}
+
+Observa que la función \texttt{print}, tal y como la usamos por ahora, introduce un salto de línea al final de la cadena aunque no lo indiquemos con \texttt{$\backslash$n}. También es posible hacer que una cadena ocupe varias líneas usando tres comillas simples (o dobles) en los extremos:
+
+\lstset{language=C}
+
+\begin{lstlisting}
+print('''Ahora empezamos por aquí y
+continuamos hasta aquí''')
+\end{lstlisting}
+
+\lstset{language=Python}
+
+Sí, eso mismo es lo que se usa en los comentarios multilínea para documentar el código, pero aquí el intérprete de Python comprenderá que estamos especificando la cadena que debe imprimir.
+
+Para terminar este apartado, hay una notación adicional para representar cadenas de caracteres que va a ser interesante al definir expresiones regulares\footnote{Gran parte del trabajo de prácticas consistirá en el uso de una representación de patrones de cadenas de caracteres, expresados con una notación formal que se denomina \emph{expresión regular}.}: las cadenas \emph{raw}. Podríamos traducirlo como cadenas \emph{en bruto} o \emph{crudas}. Una cadena de este tipo tiene que ir precedida de \emph{r} o \emph{R}, y especifica que los caracteres de escape no se procesan, es decir, que el carácter de contrabarra $\backslash$ se deja intacto en la cadena. Por ejemplo:
+
+\begin{lstlisting}
+print(r'\d\t\d')
+\end{lstlisting}
+
+
+\subsection{Boolean}
+
+Python ofrece un tipo básico \emph{boolean}\footnote{Otra vez nos saltamos la RAE. En el ámbito informático, estamos acostumbrados.} para representar los valores de verdad: \texttt{True} y \texttt{False}. Hay otros valores, como los enteros 1 y 0, que Python permite que se usen con el mismo sentido que \texttt{True} y \texttt{False}. 
+
+\subsection{None}
+
+Y para completar los tipos básicos, Python incluye la posibilidad de representar la \emph{ausencia de valor}. Puede ser útil cuando, en una función, no se devuelve nada porque no se cumplen las condiciones para hacer la operación que se requiera. El modo de representar esa ausencia de valor es \texttt{None}. Las comparaciones son odiosas, y entre lenguajes de programación más todavía, porque dan lugar a discusiones apasionadas pero, salvando las distancias, \texttt{None} vendría a ser algo parecido al \texttt{NULL} de C.
+
+\subsection{Conversiones de tipos}
+
+Muy frecuentemente nos encontraremos con la necesidad de convertir una cadena de caracteres a otro tipo de dato con el cual podamos hacer operaciones aritméticas. Python nos permite hacerlo con una serie de funciones integradas en el propio lenguaje (no hay que importar ninguna librería):
+
+\begin{lstlisting}
+x = int("123") # Convierte una cadena en entero corto
+y = float("1.2e-3") # Convierte una cadena en real
+z = complex("1+2j") # Convierte una cadena en complejo
+\end{lstlisting}
+
+Siempre podemos verificar el tipo de cualquier variable o valor con la función \texttt{type()}:
+
+\begin{lstlisting}
+z = 1+2j
+print(type(z)) # Indica <class 'complex'>
+\end{lstlisting}
+
+Las funciones de conversión de tipos que acabamos de ver (usando \texttt{int()} y similares) pueden emplearse pasando como argumento otros valores que no sean cadenas de caracteres. Hay que llevar cuidado con la posible pérdida de información. Por ejemplo:
+
+\begin{lstlisting}
+y = 1.2e-3
+x = int(y)
+print(x)   #  Imprimirá 0
+\end{lstlisting}
+
+Los anteriores son ejemplos de conversiones \emph{explícitas}. Sin que haga falta indicar nada, Python puede realizar conversiones \emph{implícitas} de tipos. Por ejemplo:
+
+\begin{lstlisting}
+x = 1.2e-3
+y = 3
+z = x + y  # Se convierte el entero de y en un real antes de sumar
+\end{lstlisting}
+
+\subsection{Comprobaciones de tipos}\label{sec:comp_tipos}
+
+Al no tener declaración de variables con tipos, es posible que a una parte de nuestro código Python llege un valor que no tengamos ni idea del tipo que tiene. Si nuestro código tuviese que hacer algo en función del tipo del valor, necesitaríamos una forma de comprobar cuál es. Afortunadamente Python nos ofrece la función integrada en el lenguaje \texttt{isinstance()}. Tiene dos argumentos: un valor y un tipo; y devuelve \texttt{True} o \texttt{False}:
+
+\begin{lstlisting}
+print(isinstance(34,int))
+\end{lstlisting}
+
+Con los tipos que hemos visto hasta ahora, el segundo argumento -- que coincidiría con lo devuelto por la función \texttt{type()} -- puede ser alguno de los siguientes:
+
+\begin{tabular}{c|l}
+	Tipo & Descripción\\
+	\hline\hline
+	\texttt{int} & Entero\\
+	\texttt{float} & Reales\\
+	\texttt{complex} & Complejos\\
+	\texttt{str} & Cadenas de caracteres\\
+	\texttt{bool} & Valores lógicos\\
+	\hline
+\end{tabular}
+
+\section{Variables}
+
+En Python, las variables no tienen que ser declaradas antes de su uso, como sucede en muchos otros lenguajes de programación como Pascal, Java y C. Algunos opinan que esto puede dar lugar a errores en la programación difíciles de detectar. Todo depende del cuidado que se lleve al programar.
+
+Las variables pueden tener nombres arbitrariamente largos (lo que la memoria de tu equipo y tu capacidad de comprensión te dejen). Pueden contener letras, números y el carácter \texttt{\_}, con la restricción de que comiencen con letra o \texttt{\_}. Las letras pueden ser mayúsculas y minúsculas, y Python distingue un uso u otro. Además, Python 3 permite que uses cualquier letra Unicode en los nombres de las variables, incluyendo vocales acentuadas y ñ. ¡Se acabaron las excusas por las faltas de ortografía al usar términos del español como variables!\footnote{No habría que abusar de los caracteres españoles si vas a compartir tu código a nivel mundial.}
+
+Python, como otros lenguajes, tiene \emph{palabras reservadas} para especificar estructuras de control, operadores, funciones básicas y algunas constantes. En la versión 3 de Python se definen las siguientes 33 palabras reservadas, ordenadas alfabéticamente, siempre en minúscula, salvo tres que contienen una mayúscula:
+
+\begin{multicols}{5}
+\begin{verbatim}
+and
+as
+assert
+break
+class
+continue
+def
+del
+elif
+else
+except
+False
+finally
+for
+from
+global
+if
+import
+in
+is
+lambda
+None
+nonlocal
+not
+or
+pass
+print
+raise
+return
+True
+try
+while
+with
+yield
+\end{verbatim}
+\end{multicols}
+
+Para empezar a usar una variable, basta con darle un valor. De hecho, la asignación de un valor a una variable por primera vez corresponde a su \emph{definición}. Si no se hace esto primero, Python nos va a indicar que es erróneo el uso de la variable. La asignación en Python se indica con \texttt{=} entre la variable y el valor:
+
+\begin{lstlisting}
+n = 10
+print(n)
+\end{lstlisting}
+
+Python permite asignaciones múltiples de dos formas. Para dar el mismo valor a varias variables, podemos encadenar las asignaciones:
+
+\begin{lstlisting}
+a = b = c = 10
+\end{lstlisting}
+
+Otra posibilidad es dar distinto valor a las variables. En este caso, se separan con comas a ambos lados de la asignación las variables y los valores:
+\begin{lstlisting}
+a, b, c = 2, 4, 16
+\end{lstlisting}
+
+Los lenguajes que obligan a declarar las variables antes de su uso, imponen que las variables deban tener el mismo tipo de dato siempre\footnote{Dejamos al margen el tipado dinámico que se logra con la herencia en los lenguajes orientados a objetos.}. Estos lenguajes se denominan \emph{estáticamente tipados}. Python, por el contrario, no tiene esta restricción:
+
+\begin{lstlisting}
+a = 23.5
+print(a)
+a = "Y ahora soy una 'cadena de caracteres'"
+print(a)
+\end{lstlisting}
+
+
+\section{Operadores}
+
+Una vez que hemos visto los valores literales y las variables, realizamos ahora un recorrido por los operadores principales del lenguaje que permiten la manipulación de esos elementos en expresiones, agrupándolos en tres bloques: operadores aritméticos, operadores relacionales (comparaciones) y operadores lógicos\footnote{Como \emph{quien mucho abarca poco aprieta}, tenemos que dejarnos muchas cosas en el tintero. Por ejemplo, los operadores a nivel de bit.}.
+
+\subsection{Operadores aritméticos}
+
+La siguiente tabla muestra un resumen de los operadores aritméticos de Python, ordenados de menor a mayor precedencia. Cada sección horizontal representa la misma precedencia. Por ejemplo, la suma y la resta tienen igual precedencia.
+
+\begin{tabular}{c|l}
+	Operador aritmético & Descripción\\
+	\hline\hline
+	$x+y$ & suma\\
+	$x-y$ & resta\\
+	\hline
+	$x*y$ & multiplicación\\
+	$x\,/\,y$ & división\\
+	$x\,//\,y$ & división entera\\
+	$x\%\,y$ & módulo\\
+	\hline
+	$+x$ & más unario\\
+	$-x$ & menos unario\\
+	\hline
+	$x*\!*\, y$ & potencia
+\end{tabular}
+
+Atención: el resultado de la división de enteros es siempre un número real, ¡incluso si el dividendo es divisible por el divisor! En cuanto a la división entera, si el resultado es positivo, se trunca la porción decimal, dejando sólo la entera. Pero si el resultado es negativo, el resultado se redondea al siguiente entero menor:
+
+\begin{lstlisting}
+print(10/2)   # El resultado es 5.0
+print(10/4)   # El resultado es 2.5
+print(10//4)  # El resultado es 2
+print(-10//4) # El resultado es -3
+\end{lstlisting}
+
+La precedencia entre los operadores determina el orden en el que Python los ejecuta en caso de encontrar una expresión en la que hay varios. Por ejemplo:
+
+\begin{lstlisting}
+print(10+2**3)  # Primero se ejecuta 2**3 y el resultado se suma a 10
+\end{lstlisting}
+
+Todos los operadores aritméticos pueden combinarse con la asignación para acortar la notación cuando se usa la misma variable a los dos lados de la asignación:
+
+\begin{lstlisting}
+x = 1
+x += 1 # Equivalente a x = x + 1
+y = 2
+y /= 5 # Equivalente a y = y / 5 
+\end{lstlisting}
+
+\subsection{Operadores relacionales}\label{sec:relacionales}
+
+Los operadores relacionales, también llamados \emph{operadores de comparación}, nos permiten especificar condiciones booleanas que nos harán falta en sentencias de control de flujo. Todos estos operadores dan como resultado \texttt{True} o \texttt{False}. La siguiente tabla muestra un resumen de estos operadores en Python, que comparten la misma precedencia:
+
+\begin{tabular}{c|l}
+	Operador relacional & Descripción\\
+	\hline\hline
+	$a == b$ & igualdad\\
+	$a\, !\!= b$ & desigualdad\\
+	$a < b$ & menor que\\
+	$a <= b$ & menor o igual que\\
+	$a > b$ & mayor que\\
+	$a >= b$ & mayor o igual que
+\end{tabular}
+
+Atención: las comparaciones de números reales pueden dar lugar a resultados inesperados:
+
+\begin{lstlisting}
+x = 1.1 + 2.2
+print(x == 3.3) # Imprime False porque x contiene 3.3000000000000003
+\end{lstlisting}
+
+Esto tiene que ver con la representación interna en Python de los números reales. En este caso, lo más recomendable es hacer una comprobación de lo próximos que se encuentran los dos números comparados, mediante la función \texttt{abs()}, que devuelve el valor absoluto:
+
+\begin{lstlisting}
+tolerancia = 1e-10
+x = 1.1 + 2.2
+print(abs(x - 3.3) < tolerancia) # Imprime True
+\end{lstlisting}
+
+Python permite comparaciones encadenadas, que implícitamente están usando una conjunción, evaluando las comparaciones de izquierda a derecha:
+
+\begin{lstlisting}
+a = 1
+b = 2
+c = 2
+print(a < b <= c) # True porque a<b y b<=c
+\end{lstlisting}
+
+\subsection{Operadores lógicos}
+
+Llega el turno de tratar los operadores que nos permiten construir condiciones lógicas complejas: conjunción, disyunción y negación. Primero, una pequeña tabla para verlos de un vistazo, incluyendo su precedencia de menor a mayor:
+
+\begin{tabular}{c|l}
+	Operador lógico & Descripción\\
+	\hline\hline
+	x or y & Disyunción\\
+	\hline
+	x and y & Conjunción\\
+	\hline
+	not x & Negación
+\end{tabular}
+
+La interpretación de los operadores es inmediata cuando los operandos son de tipo booleano. Pero Python permite que usemos operandos que no son booleanos. En general, en el contexto de una expresión booleana, se considera que es falso:
+\begin{itemize}
+	\item El valor booleano \texttt{False}.
+	\item Cualquier valor de un tipo numérico básico que sea cero: 0, 0.0, 0+0j.
+	\item Cualquier cadena vacía, como \texttt{'{}'{}}, \texttt{"{}"{}}, y con dos o tres comillas simples o dobles.
+	\item El valor \texttt{None}.
+\end{itemize}
+
+Cualquier otro valor se considera verdadero en el contexto de una expresión booleana. Usando la jerga de programadores de Python o Javascript, usamos el término \emph{falsy} para referirnos a un valor falso distinto de \texttt{False}, mientras que el término \emph{truthy} lo empleamos para los valores verdaderos distintos de \texttt{True}.
+
+Y visto lo esencial sobre los operadores lógicos, añadimos algunas consideraciones peculiares de Python. En primer lugar, si se usan los operadores \texttt{and} y \texttt{or} con operandos que no son booleanos, el resultado no es \texttt{True} o \texttt{False}, sino:
+
+\begin{tabular}{c||l|l}
+	x & x or y & x and y\\
+	\hline\hline
+	si x es \emph{truthy}  & x & y\\
+	\hline
+	si x es \emph{falsy} & y & x
+\end{tabular}
+
+Aquí tenemos un ejemplo de lo anterior:
+
+\begin{lstlisting}
+a = 0
+b = 1
+c = 2
+print(b or c)  # 1
+print(a or c)  # 2
+print(b and c) # 2
+print(a and c) # 0
+\end{lstlisting}
+
+¿Qué utilidad podría tener esto? En el caso del operador de disyunción, puede servir para implementar una forma de asignar valores algo distinta a la habitual. Si en una asignación \texttt{y = x} el valor de \texttt{x} es \emph{falsy}, podemos asignar a \texttt{y} un valor por defecto:
+
+\begin{lstlisting}
+x = ""
+y = x or "valor por defecto"
+print(y)
+\end{lstlisting}
+
+Esto puede ser interesante para evitar errores en ciertos casos en los que no se puede manejar un valor \emph{falsy}.
+
+Por otro lado, como en la mayoría de lenguajes de programación, las condiciones lógicas complejas que usan conjunciones o disyunciones múltiples se implementan con una evaluación de \emph{cortocircuito}. En el momento en que se verifique que la condición es \emph{True} o \emph{False}, se detiene la evaluación. Esto habrá que tenerlo en cuenta si se usan llamadas a funciones como operandos de la conjunción o disyunción múltiple, ya que la llamada podría no realizarse.
+
+\subsection{Precedencia entre distintos tipos de operador}
+
+¿Qué orden de evaluación emplea Python cuando combino operadores aritméticos, relacionales y lógicos? Al igual que dentro de un mismo tipo de operador existe una precedencia (salvo los relacionales, que tienen todos la misma), entre los distintos tipos también hay un orden de evaluación por defecto: 
+
+\begin{tabular}{l|c}
+	Tipo de operadores & Orden de evaluación\\
+	\hline\hline
+	Operadores lógicos & menor precedencia\\
+	\cline{1-1}
+	Operadores relacionales & $\downarrow$\\
+	\cline{1-1}
+	Operadores aritméticos & mayor precedencia
+\end{tabular}
+
+En caso de duda, siempre podemos recurrir a los paréntesis para ordenar la evaluación.
+
+\begin{lstlisting}
+x = 1
+y = False
+z = True
+print(x+2*4 < 0 or y and -z%1)
+# Equivale a (((x+(2*4)) > 0) or (y and ((-z)%1)))
+\end{lstlisting}
+
+\section{Estructuras de control}
+
+Y ahora que sabemos lo que Python puede aceptar como expresión lógica, podemos pasar a estudiar la forma de las sentencias que permiten representar estructuras de control: sentencias \texttt{if}, \texttt{while} y \texttt{for}.
+
+\subsection{Sentencia if}
+
+Ya hemos visto en la sección \ref{sec:programa_basico} el uso de un \texttt{if}. Esta estructura de control tiene la forma:
+
+\begin{lstlisting}
+if <condición>:
+    <sentencias_condición_verdadera>
+\end{lstlisting}
+
+donde \texttt{<condición>} es una expresión que se puede interpretar como \emph{falsy} o \emph{truthy}, y las sentencias que se ejecutan cuando se cumple la condición tienen todas ellas un nivel de tabulación adicional al del \texttt{if}. 
+
+Una variante de esta construcción, con un bloque \texttt{else}, tendría esta forma:
+
+\begin{lstlisting}
+if <condición>:
+    <sentencias_condición_verdadera>
+else:
+    <sentencias_condición_falsa>
+\end{lstlisting}
+
+Si has estudiado la ambigüedad típica de los lenguajes de programación tipo C con las sentencias \texttt{if-else}, comprenderás que en Python no hay ambigüedad posible porque la indentación marca explícitamente cuál es el \texttt{if} con el que está asociado cada \texttt{else}.
+
+Y una tercera variante del \texttt{if} permitiría introducir condiciones alternativas con \texttt{elif}:
+
+\begin{lstlisting}
+if <condición1>:
+    <sentencias_condición1_verdadera>
+elif <condición2>:
+    <sentencias_condición1_falsa_y_condición2_verdadera>
+	...
+else:
+    <sentencias_todos_condiciones_falsas>
+\end{lstlisting}
+
+Esta tercera variante puede ser útil para implementar algo equivalente a una sentencia \emph{switch-case} de C, porque lo creas o no, ¡en Python no existe! Una de las filosofías del lenguaje es no ofrecer varias formas de hacer lo mismo. 
+
+
+\subsection{Sentencia while}
+
+Veamos ahora un primer tipo de sentencia de Python para implementar bucles, introducido por la palabra clave \texttt{while}:
+
+\begin{lstlisting}
+while <condición>:
+    <sentencias_mientras_condicion_verdadera>
+\end{lstlisting}
+
+No hay ninguna diferencia notable con respecto al modo de hacer algo similar en C. ¿Y si quiero implementar un \emph{do-while}? Pues nos encontramos con el mismo problema que con las sentencias \emph{switch-case}: no existe en Python. En este caso, la solución podría consistir en usar un esquema como el siguiente (atención, contiene material algo fuerte para puristas de la programación):
+
+\begin{lstlisting}
+while True:
+    <sentencias_mientras_condicion_verdadera>
+    if not <condición>:
+        break
+\end{lstlisting}
+
+Es decir, la condición del \texttt{while} es siempre cierta, de modo que el bloque de sentencias se ejecuta una vez al menos. La condición de salida \emph{real} del bucle la ponemos al final del bloque de sentencias, con un \texttt{if} que, en caso de cumplirse, ejecuta una sentencia \texttt{break}. La condición de salida es la negación de la condición para continuar en el bucle, obviamente.
+
+La sentencia \texttt{break}, al igual que en C, finaliza el bucle inmediatamente anterior que la contiene. Y para ser completos, indicamos también que Python incluye una sentencia \texttt{continue} para iniciar el siguiente ciclo del bucle que la contiene. Después de esta revisión obligada de aspectos polémicos, exigida por la visión distante que debe acompañar a la enseñanza universitaria, volvemos a un terreno más llevadero.
+
+\subsection{Sentencia for}\label{sec:sentenciaFor}
+
+Ahora sí que vamos a encontrar alguna diferencia con respecto a C. Estrictamente hablando, cualquier \emph{for} de C se puede implementar con un \texttt{while}. Por esta razón, aplicando a rajatabla el criterio de no ofrecer dos formas de hacer lo mismo, las sentencias \texttt{for} de Python son otra cosa distinta. En realidad deberíamos llamarlas sentencias \texttt{for-in}. Esta construcción de Python nos permite hacer un recorrido por los elementos de un conjunto ordenados en una secuencia. 
+
+Supongamos que tengo una lista concreta de valores que quiero manipular por igual. Si la lista es corta, puedo expresarla entre corchetes, separando los valores con comas: \texttt{[$v_1$,$v_2$,$\ldots$,$v_i$]}. La sentencia \texttt{for-in} me permite definir una variable, con el nombre que prefiera, que va a tomar uno a uno el valor de los elementos de esta lista, en la secuencia en que han sido expresados en su definición. Dentro del bloque de sentencias del \texttt{for-in} puedo emplear la variable que actúa como índice:
+
+\begin{lstlisting}
+for x in [5,'7',11,'13']:
+    print(x,'es un número primo')
+\end{lstlisting}
+
+Vemos en el ejemplo que la lista puede contener valores con distinto tipo de dato. También podemos ver que la función \texttt{print} puede llamarse con una lista de argumentos separados por comas que, al mostrarlos por consola, se separan con un espacio en blanco. 
+
+Hay un tipo de dato básico que es una secuencia de valores por sí mismo: una cadena de caracteres. Así que, en Python resulta muy fácil recorrer uno por uno los caracteres de una cadena:
+
+\begin{lstlisting}
+a = 0
+for c in 'supercalifragilisticoespialidoso':
+    print(a,c)
+    a += 1
+\end{lstlisting}
+
+Una función muy útil para hacer recorridos por secuencias de enteros es \texttt{range()}:
+\begin{itemize}
+	\item \texttt{range(stop)}: genera una lista de enteros desde 0 hasta \texttt{stop-1}.
+	\item \texttt{range(start,stop,step)}: genera una lista desde \texttt{start} hasta \texttt{stop-1} saltando con intervalos dados por \texttt{step}. Si \texttt{step} no se indica, se entiende que el intervalo es 1. Podemos usar un valor negativo en \texttt{step} para generar listas de enteros decrecientes.
+\end{itemize}
+
+Un ejemplo de uso de \texttt{range()}:
+\begin{lstlisting}
+for c in range(0,-10,-1):
+    print('c=',c)
+\end{lstlisting}
+
+\section{Funciones}
+
+Las funciones de Python se introducen con la palabra clave \texttt{def} seguida del nombre de la función\footnote{Se suele indicar en minúsculas y con guiones bajos separando las palabras: \texttt{destruir\_facultad\_ahora()}.}, los argumentos\footnote{Indistintamente usamos los términos argumento y parámetro.} entre paréntesis separados por comas, y seguidamente dos puntos. Tras la cabecera de la función se inicia su bloque de sentencias, usando la indentación correspondiente. Por ejemplo:
+
+\begin{lstlisting}
+def f(a,b,c):
+    print('suma=',a+b+c)
+\end{lstlisting}
+
+Los argumentos de la función actúan como variables locales del bloque de la función. Igualmente, cualquier variable definida dentro de la función pertenece a un ámbito propio a la función. Por esta razón, se pueden ocultar variables con igual nombre definidas fuera de la función:
+
+\begin{lstlisting}
+a = 0
+
+def f():
+    a = 5
+    print('a',a)
+
+if __name__ == '__main__':
+    f()
+    print('a',a)
+\end{lstlisting}
+
+Sí, estamos de acuerdo, la característica habitual de unos apuntes o un manual sobre un lenguaje es que los ejemplos de código son bastante absurdos. Pero al menos los de estos apuntes sirven para dejar clara la cuestión que se trata en cada momento. En el pequeño trozo anterior tenemos varias cuestiones interesantes. En primer lugar, podemos definir variables \emph{globales} en un módulo, simplemente definiéndolas fuera de una función. En segundo lugar, una función tiene que estar definida antes de ser usada, de forma similar a las variables. Y en tercer lugar, y de esto era de lo que trataba el ejemplo fundamentalmente, la variable global \texttt{a} queda oculta dentro de la función \texttt{f()} por una variable local con el mismo nombre.
+
+Entonces, ¿no hay forma de modificar una variable global desde dentro de una función en Python? La respuesta es que sí, pero requiere que le echemos una mano al compilador de Python para que pueda distinguir este caso. La forma de hacerlo es sencilla: en el bloque de la función hay que introducir una sentencia con la palabra clave \texttt{global} y la lista de variables globales a las que se quiere acceder dentro de la función, separadas por comas:
+
+\begin{lstlisting}
+a = 0
+
+def f():
+    global a
+    a = 5
+
+if __name__ == '__main__':
+    f()
+    print('a',a)
+\end{lstlisting}
+
+El valor devuelto por una función como \texttt{f()} en el ejemplo anterior es \texttt{None}. Para poder devolver un resultado, es necesario emplear la palabra clave \texttt{return}, \emph{nihil sub sole novum}, como dirían los clásicos. Como Python es muy liberal en cuestión de tipos, tienes manga ancha para devolver valores de tipos distintos en la misma función, aunque se recomienda un uso moderado:
+
+\begin{lstlisting}
+def f(a):
+    if a == 1:
+        return 42
+    elif a == 2:
+        return 1-1j
+    elif a == 3:
+        return +1e-12
+    else:
+        return 'And now for something completely different!'
+
+if __name__ == '__main__':
+    print(f(1),f(2),f(3),f(4))
+\end{lstlisting}
+
+
+\subsection{Argumentos con valores por defecto}
+
+Una función en cuya definición se indican los parámetros con sus nombres únicamente, requiere que las llamadas tengan exactamente el número de parámetros indicados en la definición. En otro caso, se produciría un error. Pero es muy habitual tener funciones con algún argumento que puede tomar un valor por defecto, de modo que el programador puede evitar pasar siempre ese parámetro a la función. Por ejemplo:
+
+\begin{lstlisting}
+def f(a,b,c=0):
+    return a+b+c
+
+if __name__ == '__main__':
+    print(f(1,2)) # El resultado es 3
+    print(f(1,2,3)) # El resultado es 6
+\end{lstlisting}
+
+En Python, los argumentos con valores por defecto tienen que estar situados en la parte final de la lista de argumentos. 
+
+\subsection{Invocación con parámetros nombrados}
+
+Python permite que los argumentos de una función no tengan que ser indicados en la llamada en el orden de su definición. Para ello basta con poner en la llamada el nombre del argumento correspondiente seguido de un igual y el valor:
+
+\begin{lstlisting}
+def f(a,b,c):
+    return a*b+c
+
+if __name__ == '__main__':
+    print(f(c=2,a=1,b=3)) # El resultado es 5
+    print(f(2,c=0,b=5)) # El resultado es 10
+\end{lstlisting}
+
+
+En el ejemplo anterior vemos que se puede llamar a una función pasando al comienzo argumentos sin nombre seguidos de argumentos con nombre. Los argumentos sin nombre se asignan a los parámetros siguiendo el orden de la definición. Obviamente, no se admiten llamadas que asignen más de un valor a un mismo argumento.
+
+\subsection{No hace falta predeclarar funciones}
+
+Supongamos un código así en C:
+
+\begin{lstlisting}
+/* Predeclaro la función a() */
+void a();
+void b() {
+    // Hace algo y entonces llama a a()
+    a();
+}
+void a() {
+    // Otra cosa, quizás llamar a b()
+}
+\end{lstlisting}
+
+El compilador de C necesita la línea 2 con la predeclaración de la función \texttt{a()}, porque en caso contrario fallaría la compilación en la línea 5. Sin embargo, Python no requiere la predeclaración:
+
+\begin{lstlisting}
+def b():
+    // Hace algo y entonces llama a a()
+    a()
+}
+def a():
+    // Otra cosa, quizás llamar a b()
+}
+\end{lstlisting}
+
+La razón es sencilla: Python no \emph{resuelve} la localización de una función hasta el momento de hacer la invocación. Al llegar a la línea 3, el compilador de Python genera bytecodes que, en el momento de ejecutarse, tendrán que localizar dónde está la función \texttt{a()}, para saltar a su código.
+
+
+\section{Excepciones}
+
+Cuesta creerlo, pero es necesario aceptar que no somos perfectos. Solemos cometer un montón de errores mientras programamos, que dan lugar a problemas durante la ejecución. Además, la ejecución también puede estar condicionada por los valores que proporciona el usuario, que siempre encontrará la forma de llevar al límite a nuestro programa. Por eso, no viene nada mal que el lenguaje nos ofrezca alguna herramienta para evitar que, cuando hay problemas, todo salte por los aires sin control. En Python esta herramienta son las \emph{excepciones}. 
+
+Vamos a explicarlo con un tipo de error muy básico, pero conforme vayas programando código en Python te darás cuenta de que hay mucha variedad de errores posibles, y para todos ellos hay una forma de representarlos. El caso básico que nos servirá de ejemplo es una división por cero. Supongamos que tenemos un módulo \texttt{c.py} con el siguiente código:
+
+\begin{lstlisting}
+def operación(x,y,z):
+    return x/y + z
+
+if __name__ == '__main__':
+    res = operación(5,0,3)
+    print('Resultado =',res)
+    print('Finalizando')
+\end{lstlisting}
+
+Obviamente no deberíamos escribir un código que va a producir una división por cero tan evidente. Pero imagina que la llamada a \texttt{operación} se realiza con tres variables que proceden de una lectura de teclado. El caso es que, al ejecutar el programa anterior, tendremos un bonito mensaje en la consola:
+
+\begin{lstlisting}
+Traceback (most recent call last):
+  File "/eclipse-workspace/helloWord/c.py", line 5, in <module>
+    res = operación(5,0,3)
+  File "/eclipse-workspace/helloWord/c.py", line 2, in operación
+    return x/y + z
+ZeroDivisionError: division by zero
+\end{lstlisting}
+
+Nuestro programa finaliza descontroladamente, pero al menos hay información muy útil en el mensaje de la consola. Empezando por el final, está claro lo que ha pasado: \texttt{ZeroDivisionError: division by zero}. De esa línea nos interesa especialmente el comienzo: \texttt{ZeroDivisionError} es el nombre que Python le da a ese tipo de error, o excepción. Lo usaremos en el código que veremos enseguida para evitar que todo se descontrole. Será importante si estamos implementando el controlador de un reactor nuclear.
+
+Las restantes líneas indican la secuencia de llamadas que ha provocado el problema. En la línea 5 de \texttt{c.py} del código de primer nivel se invoca \texttt{operación} con los argumentos correspondientes; dentro de la función \texttt{operación}, en la línea 2 del mismo módulo, se encuentra la división que lanza la excepción. 
+
+\subsection{Bloque try-except}
+
+Para tener un control sobre los posibles errores en tiempo de ejecución de un programa, y evitar que provoquen la finalización abrupta del mismo, Python nos ofrece una sentencia que funciona, básicamente, con dos palabras clave, \texttt{try} y \texttt{except}, que introducen dos bloques de código. El bloque de \texttt{try} contiene el código en el que, potencialmente, puede producirse la excepción, mientras que el bloque de \texttt{except} incluye el código que \emph{maneja} la excepción. Por ejemplo:
+
+\begin{lstlisting}
+if __name__ == '__main__':
+    try:
+        res = operación(5,0,3)
+        print('Resultado =',res)
+    except ZeroDivisionError:
+        print('Problemas con una división por cero')
+    print('Finalizando')
+\end{lstlisting}
+
+Detrás de la palabra clave \texttt{except} podríamos haber dejado los dos puntos directamente, sin indicar el nombre de la excepción que queremos capturar. Eso nos permitiría escribir un manejador de errores genérico. Sin embargo, conviene indicar expresamente cuál es la excepción que queremos capturar. En este caso, el tratamiento del error no es ninguna maravilla: un mensaje de error al usuario. Algo más conveniente sería indicarle que reintroduzca los datos para hacer otro intento. Si ejecutas el código anterior, podrás observar que no se llega al \texttt{print} de la línea 4. Es normal: si se produce la excepción en una sentencia del bloque del \texttt{try}, deja de ejecutarse ese bloque y se pasa a ejecutar el bloque del \texttt{except} que especifica la excepción que se ha producido.
+
+\subsection{Bloque try-except-else-finally}
+
+El bloque de tratamiento de excepciones que hemos visto en la sección anterior es un caso de la estructura más completa que podemos usar en Python, y que seguiría la siguiente plantilla:
+\begin{lstlisting}
+try:
+    /* Bloque que puede lanzar excepciones */
+except Excepción1:
+    /* Tratamiento de las excepciones tipo Excepción1 */
+except (Excepción2,Excepción3):
+    /* Tratamiento de las excepciones tipo Excepción2 y Excepción3 */
+...
+except:
+    /* Tratamiento de otras excepciones */
+else:
+    /* Bloque que se ejecuta si no ha habido excepciones */
+finally:
+	/* Bloque que se ejecuta en cualquier caso al final */
+\end{lstlisting}
+
+Como ves, si el tratamiento de varias excepciones va a ser igual, podemos indicarlo listándolas entre paréntesis en un único \texttt{except}. 
+
+\subsection{Aserciones}
+
+Una forma de depurar programas Python es usar la sentencia \texttt{assert}, que permite generar una excepción cuando no se cumple alguna condición necesaria para la correcta ejecución de una porción de código. Por ejemplo:
+
+\begin{lstlisting}
+def operación(x,y,z):
+    assert y!=0,'Parámetro y es 0'
+    return x/y + z
+
+if __name__ == '__main__':
+    try:
+        res = operación(5,0,3)
+        print('Resultado =',res)
+    except AssertionError as error:
+        print('No se cumple una aserción:', error)
+    print('Finalizando')
+\end{lstlisting}
+
+La sentencia \texttt{assert} requiere una condición, que se evalúa para comprobar si es \texttt{False}. En este caso, se genera una excepción de tipo \texttt{AssertionError} que contiene el dato que se especifica a continuación de la coma. Esa excepción puede ser capturada y manipulada convenientemente dentro de una estructura \texttt{try-except} del programa. Observa la línea 9 del código anterior. La línea \texttt{except} termina con \texttt{as error}. La palabra clave \texttt{as} permite darle un nombre a la instancia de la excepción \texttt{AssertionError} que se captura en esta línea, y más concretamente el nombre es \texttt{error}. Dentro del bloque que introduce este \texttt{except} se puede usar esta variable para hacer referencia a la excepción. Muy frecuentemente se imprimirá mediante una sentencia \texttt{print()}.
+
+

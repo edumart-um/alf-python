@@ -1,0 +1,115 @@
+%!TEX root = Python.tex
+
+\chapter{Documentación de Python}
+
+\lettrine[lines=5]{F}{inalizamos} estos apuntes de Python con una explicación breve sobre el modo habitual de documentar el código. Si vas hacia atrás unas cuantas hojas, y más concretamente a la sección \ref{sec:comentarios} en la que tratábamos los comentarios de código en Python, podrás ver que el esqueleto que generó Eclipse para \texttt{helloword.py} incluía al comienzo una cadena de múltiples líneas que comenzaba y terminaba con tres comillas. Este tipo de cadena se conoce como \emph{docstring}. Hay ciertas partes del código de Python en las que podemos introducir estas cadenas para documentar lo que estamos haciendo. Por supuesto, a nadie le gusta documentar el código. ¡Que el que lo lea se esfuerce en entenderlo! Pero cuando te toca a ti darle vueltas a lo que ha escrito otro, no viene nada mal algunas palabritas sobre lo que ha hecho. 
+
+En el código Python, al menos, deberíamos describir los módulos, las clases y las funciones. La documentación del módulo debe aparecer justo al comienzo del fichero, mientras que la de una clase o un método se indica justo a continuación de la línea \texttt{class} o la línea \texttt{def}. El esquema de la documentación es el siguiente:
+
+\begin{lstlisting}
+'''
+Documentación del módulo
+'''
+
+class X:
+    '''
+    Documentación de la clase
+    '''
+
+    def metodo(args):
+        '''
+        Documentación de la función
+        '''
+\end{lstlisting}
+
+En la siguiente sección indicamos sugerencias sobre lo que puede especificarse en cada cadena de documentación. No vamos a usar ningún sistema complejo para documentar el código, del estilo de \emph{reStructured}. Ten en cuenta que en esta asignatura no tienes que entregar una memoria de prácticas. A cambio, los profesores de la asignatura evaluamos que seas generoso en la documentación del código.
+
+\section{Formato de la documentación}
+
+La documentación de módulos, clases y funciones sigue un formato muy libre. Se realiza con cadenas multilínea (con tres comillas simples o dobles), y se recomienda que tenga las siguientes partes:
+\begin{enumerate}
+	\item Tras la apertura de la cadena, escribimos una línea en forma de resumen o título.
+	\item Dejamos una línea en blanco después del resumen.
+	\item A continuación escribimos una serie de líneas adicionales en las que nos podemos extender lo que queramos, evitando superar los 72 caracteres por línea.
+	\item Después del cierre de la cadena, se deja una línea en blanco antes del código que viene a continuación.
+\end{enumerate}
+
+\subsection{Documentación de una clase}
+
+Cuando describimos una clase, al menos deberíamos indicar lo siguiente:
+\begin{itemize}
+	\item Un breve resumen del propósito de la clase.
+	\item Un listado de los atributos (de clase o instancia).
+	\item Un listado de los métodos que queremos que se usen desde el código cliente.
+\end{itemize}
+
+Por ejemplo:
+
+\begin{lstlisting}
+class Afd:
+    '''
+    Clase que representa un fichero JFLAP en Python
+	
+    Atributos
+    ---------
+    nestados: int 
+        Número de estados del autómata
+    ntransiciones: int
+        Número de transiciones del autómata
+
+    Métodos
+    -------
+    getEstadoInicial() : str
+        Devuelve el nombre del estado inicial
+    esFinal(estado : str) : bool
+        Devuelve True si el estado es final
+    estadoSiguiente(estado : str, símbolo : str) : str
+        Devuelve el destino de una transición
+    '''
+\end{lstlisting}
+
+\subsection{Documentación de un método}
+
+La documentación de los métodos puede ser más explícita a la hora de describir lo que estos hacen. Por ejemplo, se puede indicar:
+\begin{itemize}
+	\item Una breve descripción de lo que hace el método y cómo se usa.
+	\item Una descripción de los argumentos, tanto requeridos como opcionales o nombrados.
+	\item En el caso de los atributos opcionales, el valor por defecto que toman.
+	\item Una descripción de cualquier excepción que se puede lanzar desde el método y en qué circunstancias.
+\end{itemize}
+
+Este podría ser un ejemplo:
+\begin{lstlisting}
+def estadoSiguiente(self, estado, símbolo)
+    '''
+    Devuelve un str con el destino de una transición desde un estado
+    y con un símbolo dados. Si no existe una transición con esas 
+    características, devuelve None.
+	
+    Parámetros
+    ----------
+    estado: str
+        Estado desde el que se inicia la transición
+    símbolo: str
+        Símbolo que etiqueta la transición
+\end{lstlisting}
+
+\subsection{Documentación de un módulo}
+
+En la parte superior de un módulo es conveniente escribir una descripción general del mismo que puede contener, entre otras cosas, lo siguiente:
+\begin{itemize}
+	\item Título del módulo y fecha de creación.
+	\item Autor indicado tras \texttt{@author:}.
+	\item Descripción general de las clases o métodos agrupados en el módulo y su funcionalidad común.
+	\item Indicación de las dependencias del módulo, como los paquetes que deben estar instalados para poder usarlo.
+	\item Indicación de la funcionalidad del módulo a través del código de primer nivel, en caso de que tenga un punto de entrada \texttt{\_\_main\_\_}.
+\end{itemize}
+
+\section{Uso de la documentación}
+
+Al margen de permitir al que lee el código fuente una comprensión mayor sobre lo que realiza, podemos usar alguna herramienta que saca provecho de los \emph{docstrings} que hemos introducido en el código. Una de ellas es \texttt{help}. Desde el intérprete interactivo de Python podemos importar un módulo y consultar su documentación usando dicho comando. Por ejemplo:
+
+\begin{lstlisting}
+>>> import jflap.Afd
+>>> help(jflap.Afd)
+\end{lstlisting}

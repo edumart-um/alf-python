@@ -1,0 +1,144 @@
+%!TEX root = Python.tex
+
+\chapter{Clases}
+
+\lettrine[lines=5]{V}{amos} a hacer una mínima incursión en el terreno de la programación orientada a objetos con Python. Tiene que ser mínima por dos razones: para aprender el paradigma de programación orientado a objetos ya tenéis la asignatura correspondiente, y no es muy aconsejable mezclar ideas de aquí y allá cuando se está empezando porque la indigestión puede ser importante; y en segundo lugar, si nos metemos a fondo con la orientación a objetos en Python, estos apuntes van a perder su intención inicial de ser pequeños. Por tanto, sólo vamos a contar lo estrictamente necesario y así tendréis la oportunidad de leer con ganas los libros que aparecen indicados en la bibliografía al respecto de esta parte del lenguaje.
+
+\section{Introducción}
+
+Vamos a enfocar el uso de la orientación a objetos como una vuelta de tuerca más de la estructuración del código. Como vimos en el capítulo \ref{chap:modulosPaquetes}, Python está muy preparado para que resulte fácil organizar el código de un proyecto en módulos. Un módulo contiene una serie de definiciones que puedo importar en otro módulo, pero atención, sólo puedo hacerlo una vez. Hasta ahora hemos visto módulos que contienen definiciones de variables y de funciones.
+
+Imagina que quieres hacer un módulo que contenga variables y funciones para representar rectángulos. Aunque se puede hacer, no sería muy estético que con un único módulo, que sólo se puede importar una vez, pudieses representar muchas instancias de rectángulos distintos. Aquí es donde viene en ayuda la definición de clases.
+
+Una clase permite definir un tipo de dato nuevo del cual puedo crear cuantas instancias me apetezca, de modo similar a la forma de crear muchas listas o diccionarios que ya hemos visto. Cada instancia, u \emph{objeto}, tiene su propia memoria, con sus valores de variables, y puedo invocar a métodos sobre cada instancia que trabajen con esos valores y no los de otra instancia.
+
+\subsection{Definición}
+
+Vamos a empezar viendo cómo definir una clase. Dentro de un mismo módulo se pueden crear múltiples clases. Por ejemplo, supongamos que definimos una clase para representar un rectángulo. Podemos hacerlo en un módulo \texttt{figuras2D.py}, dentro del cual definimos la clase empezando con la palabra clave \texttt{class} seguida del nombre de la clase \texttt{Rectángulo}\footnote{Los nombres de clases se escriben comenzando con mayúsculas: \texttt{class DestructorFacultad}. }. Normalmente los nombres de clases se inician con una letra en mayúscula en Python. La clase crea un espacio de nombres nuevo, y todas las definiciones de variables o métodos de la clase se especifican en un bloque indentado a continuación de la línea \texttt{class}. 
+
+\begin{lstlisting}
+class Rectángulo:
+    # Definición de métodos y variables
+\end{lstlisting}
+
+Una clase tiene un primer método especial, porque es el encargado de crear instancias nuevas de la clase. Se llama \emph{inicializador}, y puede recibir argumentos con los valores que permiten definir la nueva instancia. Por ejemplo, un rectángulo se define con el alto y el ancho. El método inicializador siempre se llama igual en Python: \texttt{\_\_init(self,...)\_\_}:
+
+\begin{lstlisting}
+class Rectángulo:
+    def __init__(self,alto,ancho):
+        self.alto = alto
+        self.ancho = ancho
+\end{lstlisting}
+
+Como ves, además de los argumentos que sirven para definir la instancia nueva, siempre hay un primer argumento en el inicializador y en cualquier otro método de la clase, que se llama \texttt{self}. Se trata de una referencia a la instancia de la clase. En el inicializador, puedo definir variables de las instancias usando la notación \texttt{self.X}, donde \texttt{X} es el nombre de la variable que quiero definir. Normalmente los parámetros que se pasan al inicializador sirven para dar valor a algunas de estas variables. En cualquier método adicional puedo consultar y modificar los valores de estas variables usando \texttt{self.X}.
+
+Podemos añadir un método para calcular el área del rectángulo, siguiendo siempre la convención de poner como primer argumento a \texttt{self}:
+
+\begin{lstlisting}
+class Rectángulo:
+    def __init__(self,alto,ancho):
+        self.alto = alto
+        self.ancho = ancho
+    def área(self):
+        return self.alto*self.ancho
+\end{lstlisting}
+
+\subsection{Creación y uso de instancias}
+
+Una vez que hemos definido la clase, podemos probarla con varias instancias y llamadas a sus métodos. Para instanciar un objeto de una clase hay que invocar a su inicializador, usando el nombre de la clase. Una vez que están instanciados los objetos, podemos invocar a métodos sobre cada uno de ellos. Si la clase está en un módulo distinto a aquél que va a usarla, nos hará falta empezar haciendo la importación correspondiente:
+
+\begin{lstlisting}
+from figuras2D import Rectángulo
+\end{lstlisting}
+
+También podemos probar la clase dentro del módulo \texttt{figuras2D.py}, con algún código de primer nivel que instancie varios objetos e invoque a sus métodos para comprobar que todo va bien:
+
+\begin{lstlisting}
+if __name__ == '__main__':
+    r1 = Rectángulo(5,4)            # Crea un rectángulo con alto=5 y ancho=4
+    r2 = Rectángulo(8.3,20.1)
+    print('Area de r1:',r1.área())
+    print('Area de r2:',r2.área())
+\end{lstlisting}
+
+En muchas ocasiones se crean instancias de una clase dentro de otra clase. Este uso se conoce como \emph{composición} en orientación a objetos.
+
+\subsection{Variables de clase}
+
+Además de definir variables de instancia en el inicializador de la clase, también se pueden definir variables de clase que son compartidas por todas las instancias de la clase. Para ello únicamente hay que definir las variables fuera de los métodos de la clase, sin usar \texttt{self} delante:
+
+\begin{lstlisting}
+class Rectángulo:
+    tipo = 'rectángulo'   # Variable compartida por todas las instancias
+    ...
+\end{lstlisting}
+
+\subsection{Visibilidad}
+
+En Python, por defecto, todas las variables y métodos son accesibles para cualquier código que utilice la clase. Existen algunos modos de ocultar las definiciones pero, como se suele decir, queda fuera del ámbito de este documento. Únicamente os recomendamos que sigáis la convención de nombrar con un prefijo de dos guiones bajos \texttt{\_\_X} a los métodos y variables que no queráis que se usen desde fuera de la clase.
+
+\section{Herencia}
+
+Además de la composición, la otra gran ventaja de la orientación a objetos es la \emph{herencia} que consiste en definir clases a partir de otras previamente creadas. La herencia requiere un diseño meditado del código, porque no es algo que se improvise a la ligera. Por ejemplo, si quisiéramos ampliar el módulo \texttt{figuras2D.py} con cuadrados, círculos y demás, nos daríamos cuenta de que todas las clases comparten alguna funcionalidad común, como el método para calcular el área. Podríamos definir una clase base que definiese este método y, mediante herencia, crearíamos los distintos tipos de figuras extendiendo la clase base mediante herencia.
+
+Vamos a ver aplicado el concepto de herencia a una jerarquía de clases que definen puntos en espacios tridimensionales, bidimensionales y unidimensionales. Creamos tres clases \texttt{Punto3D}, \texttt{Punto2D} y \texttt{Punto1D}, y vamos a hacer que la primera de ellas esté en la raíz de la jerarquía de herencia, ya que un punto bidimensional se puede considerar como otro tridimensional en el que la coordenada \texttt{z} es cero; de modo similar, un punto de unidimensional es como uno bidimensional en el que la coordenada \texttt{y} es cero:
+
+\begin{lstlisting}
+class Punto3D:
+    def __init__(self, x, y, z):
+        self.x, self.y, self.z = x, y, z 
+    def módulo(self):
+        return (self.x**2+self.y**2+self.z**2)**0.5
+		
+class Punto2D(Punto3D):
+    def __init__(self, x, y):
+        super().__init__(x, y, 0)
+
+class Punto1D(Punto2D):
+    def __init__(self, x):
+        super().__init__(x, 0)
+		
+if __name__ == '__main__':
+    p3 = Punto3D(4,2,2)
+    p2 = Punto2D(3,4)
+    p1 = Punto1D(6)
+    print('%.2f %.2f %.2f' % (p3.módulo(),p2.módulo(),p1.módulo()))
+\end{lstlisting}
+
+Como vemos en el código anterior, la forma de indicar que una clase hereda de otra consiste en indicar junto al nombre de la clase, entre paréntesis, la clase de la que hereda, también llamada clase \emph{base}. Por ejemplo \texttt{Punto2D(Punto3D)} significa que la clase \texttt{Punto2D} hereda de la clase \texttt{Punto3D}. La herencia implica que todos los métodos y variables de la clase base pasan a ser métodos y variables de la nueva clase, salvo el inicializador. Por ejemplo, el método \texttt{módulo()} se puede invocar también sobre objetos de la clase \texttt{Punto2D}.
+
+En la clase \texttt{Punto2D} se ha definido un inicializador distinto, que sólo tiene argumentos \texttt{x} e \texttt{y}. Desde este inicializador se invoca al de la clase base mediante \texttt{super()}, que permite recuperar una referencia a dicha clase base. Como se puede observar, el argumento \texttt{z} en la invocación de la línea 9 es 0, como corresponde a un punto bidimensional. De forma similar se continúa la jerarquía de herencia a \texttt{Punto1D}.
+
+\section{Comprobaciones con objetos}
+
+Cuando creamos objetos y los guardamos en variables o cualquier tipo de contenedor, lo que estamos haciendo realmente es guardar una referencia a la posición de memoria donde se ha creado el objeto. Python es bueno con nosotros y nos oculta todos los detalles de bajo nivel que en lenguajes más espartanos, como C, tendríamos que manejar nosotros mismos.
+
+Si una variable que contiene una referencia a un objeto se asigna a otra variable, siempre estaremos copiando la referencia, no estaremos creando una copia del objeto en sí. Y recuerda que un objeto puede tener internamente referencias a otros objetos que usa por composición. 
+
+Para comprobar si una referencia que tenemos por un lado apunta al mismo objeto que otra, podemos usar el operador relacional \texttt{is}:
+
+\begin{lstlisting}
+p1 = Punto3D(4,2,2)
+p2 = p1 # Copiamos referencias
+print(p1 is p2) # Imprime True
+\end{lstlisting}
+
+Si lo que queremos hacer es comprobar si dos objetos son iguales en el sentido de que contienen exactamente la misma información, aunque sean instancias distintas de una misma clase, podemos usar el operador relacional \texttt{==}:
+
+\begin{lstlisting}
+p1 = Punto3D(4,2,2)
+p2 = Punto3D(4,2,2)
+print(p1 == p2) # Imprime True
+print(p1 is p2) # Imprime False
+\end{lstlisting}
+
+También podemos comprobar si un objeto es de cierta clase, usando la función \texttt{isinstance()} que ya vimos en la sección \ref{sec:comp_tipos}. Esta función recibe como argumento la referencia al objeto y la clase o tipo. Debido a la herencia, \texttt{isinstance()} devuelve \texttt{True} si comprobamos que un objeto es instancia de toda la jerarquía hasta la clase base:
+
+\begin{lstlisting}
+p1 = Punto1D(4)
+print(isinstance(p1,Punto1D)) # Imprime True
+print(isinstance(p1,Punto2D)) # Imprime True
+print(isinstance(p1,Punto3D)) # Imprime True
+\end{lstlisting}
+
+Además de las comprobaciones con tipos básicos y clases, \texttt{isinstance()} también permite verificar si una instancia es una lista (\texttt{list}), un diccionario (\texttt{dict}), un conjunto (\texttt{set}) o una tupla (\texttt{tuple}).

@@ -1,0 +1,289 @@
+%!TEX root = Python.tex
+
+\chapter{Listas, diccionarios, conjuntos y tuplas}
+
+\lettrine[lines=5]{S}{eguro} que tienes grandes recuerdos de los buenos ratos que has pasado programando tipos abstractos de datos en C. Los tipos abstractos de datos son fundamentales en el trabajo de los programadores, y uno respira con alivio cuando encuentra un lenguaje en el que generosamente se han preparado unos cuantos para usarlos con poco esfuerzo. Es el caso de Python, que nos ofrece una colección de tipos incluidos en el lenguaje realmente útiles para una gran cantidad de aplicaciones. Aunque hemos visto la mayoría de ellos en algunos ejemplos de páginas anteriores, vamos a analizarlos con más detenimiento a lo largo de este capítulo.
+
+\section{Listas}\label{sec:listas}
+
+Las listas de Python son las secuencias ordenadas más flexibles del lenguaje. En el capítulo anterior se describieron las cadenas como ejemplo de secuencias, pero las listas van algo más allá en cuanto a flexibilidad: pueden contener instancias de cualquier tipo de dato, incluidas otras listas, y son mutables, es decir, podemos modificar cualquier posición de una lista, añadirle o borrarle elementos. Y lo mejor de todo, viniendo del mundo de C, es que no tenemos que preocuparnos por la memoria usada por la lista: Python se encarga de gestionarla, aumentando o reduciendo el espacio que haga falta.
+
+\subsection{Operaciones básicas}
+
+Vamos a empezar viendo la forma básica de crear listas:
+
+\begin{lstlisting}
+lista_vacía = []
+lista_no_vacía = [123, 'abc', 1.23, [1,2,3]]
+\end{lstlisting}
+
+Como puedes ver, en la sintaxis de Python relativa a las listas, se usan corchetes para denotar el comienzo y final de una lista, y en su interior se indican los elementos que contiene separándolos mediante comas. 
+
+Al tratarse de un tipo de secuencia, la longitud de una lista se puede consultar usando el método \texttt{len()}, y podemos manejar los operadores de concatenación \texttt{+} y repetición \texttt{*}:
+
+\begin{lstlisting}
+print(len([1,2,3]))
+l = [1,2,3]+[4,5,6] # Se genera la lista [1,2,3,4,5,6]
+l = [1]*10 # Se genera la lista [1,1,1,1,1,1,1,1,1,1]
+\end{lstlisting}
+
+Recuerda que el operador de concatenación tiene que trabajar con operandos del mismo tipo. Por esta razón, puede resultar útil saber que es posible convertir una lista a una cadena y viceversa usando los métodos \texttt{str()} y \texttt{list()}:
+
+\begin{lstlisting}
+s = str([1,2,3]) # Genera la cadena '[1,2,3]'
+l = list('123') # Genera la lista ['1','2','3']
+\end{lstlisting}
+
+También podemos usar el operador \texttt{in} para verificar que una lista contiene un valor, o realizar una iteración entre sus elementos:
+
+\begin{lstlisting}
+l = [1,2,3]
+print(3 in l) # Imprime True
+for x in l:
+    print('Contiene',x)
+\end{lstlisting}
+
+La indexación de las listas funciona como la de las cadenas (también lanza \texttt{IndexError} si el índice de la indexación es incorrecto), al igual que el troceado:
+
+\begin{lstlisting}
+l = ['um','Um','UM']
+print(l[2]) # Imprime 'UM'
+x = l[1:]  # Extrae ['Um','UM']
+\end{lstlisting}
+
+Una forma común de representar matrices en Python es mediante listas anidadas. Por ejemplo, esto es una matriz 3x3:
+
+\begin{lstlisting}
+m = [[1,2,3],[4,5,6],[7,8,9]]
+\end{lstlisting}
+
+Para acceder a las posiciones de la matriz, además de poder extraer la fila \texttt{i}-ésima mediante \texttt{m[i]}, también es posible extraer el elemento \texttt{i,j} de la matriz usando la idexación dos veces \texttt{m[i][j]}.
+
+\subsection{Modificación de listas}
+
+Tenemos dos modos de modificar las listas. El primero modo consiste en usar el operador de indexación o troceado a la izquierda de una asignación para modificar posiciones específicas de la lista. El segundo modo se basa en el empleo de métodos que se invocan sobre la lista y realizan modificaciones de la misma. Vamos a verlos por separado.
+
+\subsubsection{Modificación con indexación o troceado}
+
+Podemos modificar posiciones individuales o posiciones consecutivas de la lista empleando las operaciones de indexación y troceado:
+
+\begin{lstlisting}
+c = ['zarangollo','spam','spam','paparajote']
+c[1] = 'caldero' 
+c[1:3] = ['pisto','marinera'] 
+\end{lstlisting}
+
+Las operaciones anteriores alteran posiciones de la lista de acuerdo con los valores de los índices. También podemos realizar inserciones y eliminaciones de una lista usando la operación de troceado. Por ejemplo, podemos borrar sustituyendo por la lista vacía \texttt{[]}:
+
+\begin{lstlisting}
+c = ['zarangollo','spam','spam','paparajote']
+c[1:3] = [] # Elimina posiciones 1 y 2
+\end{lstlisting}
+
+Alternativamente podríamos usar el operador \texttt{del} para realizar esto mismo en posiciones individuales o con troceado:
+
+\begin{lstlisting}
+c = ['zarangollo','spam','spam','paparajote']
+del c[1]   # Elimina la posición 1
+del c[1:3] # Elimina las posiciones 1 y 2
+\end{lstlisting}
+
+También podemos insertar indicando una misma posición en los dos índices del troceado, y asignando una lista de elementos a introducir:
+
+\begin{lstlisting}
+c = ['zarangollo','paparajote']
+c[1:1] = ['pisto','caldero']  
+\end{lstlisting}
+
+Para insertar una lista de valores \texttt{X} al principio de la lista \texttt{L} podríamos usar la asignación \texttt{L[:0]=X}. De forma similar, para concatenarla al final, podríamos usar \texttt{L[len(L):]=X}.
+
+\subsubsection{Modificación con métodos}
+
+Una segunda forma, quizás más explícita, de modificar una lista \texttt{L} consiste en realizar llamadas a métodos sobre dicha lista. Este es un primer grupo de métodos para alterar las posiciones de la lista:
+
+\begin{itemize}
+	\item \texttt{L.insert(i,X)}: inserta el valor \texttt{X} en la posición \texttt{i} de la lista.
+	\item \texttt{L.append(X)}: añade el valor \texttt{X} al final de la lista.
+	\item \texttt{L.extend(L2)}: añade la lista de valores \texttt{L2} al final de la lista.
+	\item \texttt{L.pop(i)}: elimina el valor que ocupa la posición \texttt{i}, y lo devuelve. Si no se indica el índice \texttt{i}, extrae el último elemento.
+	\item \texttt{L.remove(X)}: elimina la primera ocurrencia del valor \texttt{X} en la lista. Atención, lanza una excepción \texttt{ValueError} si la lista no contiene el valor \texttt{X}.
+	\item \texttt{L.clear()}: elimina todos los elementos de la lista.
+\end{itemize}
+
+\subsection{Otras operaciones}
+
+Se pueden realizar otras operaciones sobre listas que pueden ser útiles:
+
+\begin{itemize}
+	\item \texttt{L.index(X)}: devuelve la primera posición de la lista en la que aparece \texttt{X}; lanza \texttt{ValueError} si \texttt{X} no se encuentra en la lista.
+	\item \texttt{L.count(X)}: devuelve la cantidad de veces que aparece \texttt{X} en la lista.
+	\item \texttt{L.reverse()}: invierte la lista.
+	\item \texttt{L.copy()}: genera una nueva lista que es copia de \texttt{L}.
+\end{itemize}
+
+Mención aparte merece el método \texttt{L.sort()}. Por defecto, este método ordena en orden ascendente los elementos de la lista. Si queremos que lo haga en orden descendente, podemos especificar el parámetro \texttt{reverse=True}:
+
+\begin{lstlisting}
+l=[2,43,223,3,21,74,-1]
+l.sort(reverse=True) # ordena en orden descendente
+\end{lstlisting}
+
+
+\section{Diccionarios}\label{sec:diccionarios}
+
+Junto con las listas, los diccionarios son uno de los tipos incluidos en el lenguaje Python más útiles y flexibles. Un diccionario es una colección \emph{no ordenada} -- y, por tanto, no secuencial -- de valores que se almacenan y recuperan mediante una \emph{clave} en lugar de usar una posición. Los valores pueden ser de cualquier tipo de dato.
+
+Mientras que una lista tiene la función de un array en otros lenguajes, los diccionarios son similares a los registros o estructuras. Están implementados para que las operaciones de consulta mediante las claves sean muy eficientes. Comparten con las listas el hecho de ser un tipo de dato \emph{mutable}, y de ahorrar al programador el manejo de la memoria. Los diccionarios también reciben otras denominaciones, como \emph{arrays asociativos} o \emph{tablas de dispersión}. 
+
+\subsection{Operaciones básicas}
+
+Empezamos, como en el caso de las listas, viendo cómo crear diccionarios de forma explícita. Si en las listas usábamos los corchetes como marcadores de comienzo y fin, en el caso de los diccionarios empleamos llaves. Además, cada valor aparece precedido de una clave y dos puntos:
+
+\begin{lstlisting}
+X = {} # Diccionario vacío
+D = { 'nombre':'Santiago Paredes', 'alias':'Chapu', 'dpto':'DIIC' }
+\end{lstlisting}
+
+La clave puede ser de cualquier tipo inmutable. En cuanto a los valores, no tienen ninguna limitación y, por ejemplo, podríamos encontrar diccionarios o listas dentro de diccionarios. Una segunda forma de crear diccionarios es mediante el método \texttt{dict()}, con dos variantes: especificando una lista de pares (nombre,valor), o bien una lista de argumentos nombrados:
+
+\begin{lstlisting}
+D = dict([('nombre','Santiago Paredes'),('alias','Chapu'),('dpto','DIIC')])
+D = dict(nombre='Santiago Paredes', alias='Chapu', dpto='DIIC')
+\end{lstlisting}
+
+La consulta de un diccionario se realiza con una sintaxis parecida a la de un array, pero en lugar de indicar la posición de la entrada que se quiere recuperar entre corchetes, se usa la clave asociada a la entrada. Por ejemplo, usando el diccionario \texttt{D} anterior:
+
+\begin{lstlisting}
+print('%s es del departamento %s' % (D['alias'],D['dpto']))
+\end{lstlisting}
+
+Si la clave no existe en el diccionario, se lanza una excepción \texttt{KeyError}. Por tanto, puede resultar útil verificar si un diccionario contiene una entrada con una determinada clave antes de recuperarla, empleando el operador \texttt{in}:
+
+\begin{lstlisting}
+if 'alias' in D:
+    print(D['alias'])
+\end{lstlisting}
+
+Existe la alternativa con el método \texttt{get()} para recuperar un valor a partir de su clave, con la diferencia de que, en caso de que no exista la clave, no se lanza la excepción \texttt{KeyError} sino que se devuelve el valor \texttt{None}:
+
+\begin{lstlisting}
+D = { 'uk':'Turing', 'eeuu':'Church', 'cz':'Gödel', 'de':'Hilbert'}
+x = D.get('es')
+print(x) # Imprime None
+\end{lstlisting}
+
+Podemos especificar un segundo parámetro del método \texttt{get()} a modo de valor por defecto que se devuelve en caso de que no se encuentre la clave en el diccionario:
+
+\begin{lstlisting}
+x = D.get('es','Manolete')
+print(x) # Imprime 'Manolete'
+\end{lstlisting}
+
+De forma similar al caso de las listas, se puede conocer la cantidad de entradas guardadas en un diccionario con el método \texttt{len()}. Pero ya hemos indicado que los diccionarios no son secuencias. Entonces, ¿no podemos hacer iteraciones con ellos? Sí podemos, gracias a dos métodos de los diccionarios que devuelven conjuntos para ser usados en la sentencia \texttt{for-in}. Se trata de los métodos \texttt{keys()}, que permite iterar sobre el conjunto de claves, y \texttt{values()}, que permite hacer lo mismo sobre los valores. Por ejemplo:
+
+\begin{lstlisting}
+for k in D.keys():
+    print('La clave %s tiene valor %s' % (k,D[k]))
+\end{lstlisting}
+
+Algo un poco raro de los métodos \texttt{keys()} y \texttt{values()} es que no devuelven listas sino, como se ha indicado, conjuntos. Además son conjuntos que están vinculados al diccionario de modo que si el diccionario se modifica, también lo hacen los conjuntos de claves o valores que hayamos obtenido\footnote{Técnicamente hablando, los conjuntos devueltos por \texttt{keys()} y \texttt{values()} se denominan \emph{vistas de diccionario}.}. Trataremos el tipo de dato conjunto en la sección \ref{sec:conjuntos}. 
+
+También podemos realizar una copia de un diccionario usando el metodo \texttt{copy()}.
+
+\subsubsection{Modificación directa}
+
+El modo más sencillo para añadir o modificar una entrada del diccionario es accediendo a su clave a la izquierda de una asignación:
+
+\begin{lstlisting}
+D = {}
+D['nombre'] = 'Eduardo Martínez' # Añade una entrada
+D['nombre'] = 'Pepe Juárez' # Modifica el valor de una entrada
+\end{lstlisting}
+
+Podemos eliminar una entrada del diccionario con el operador \texttt{del}:
+
+\begin{lstlisting}
+D = {}
+D['nombre'] = 'Eduardo Martínez' # Añade una entrada
+del D['nombre'] # Y la elimina
+\end{lstlisting}
+
+Si la clave usada en la eliminación no existe, se lanza la excepción \texttt{KeyError}.
+
+\subsubsection{Modificación con métodos}
+
+Para concluir este apartado, vamos a ver una serie de métodos mediante los cuales podemos realizar modificaciones sobre un diccionario \texttt{D} dado:
+\begin{itemize}
+	\item \texttt{D.clear()}: elimina todas las entradas del diccionario.
+	\item \texttt{D.pop(clave,defecto?)}: extrae y elimina una entrada con la clave indicada como primer parámetro. En caso de que la entrada no exista, se lanza una excepción \texttt{KeyError}. Como alternativa, se puede indicar un segundo valor por defecto que se devuelve en caso de que la entrada no exista, evitando la excepción \texttt{KeyError}. 
+	\item \texttt{D.update(D2)}: inserta en el diccionario \texttt{D} todas las entradas del diccionario \texttt{D2}. En caso de que haya alguna clave en \texttt{D2} que ya esté en \texttt{D}, se modifica su valor con el que indique \texttt{D2}.
+\end{itemize}
+
+\section{Conjuntos}\label{sec:conjuntos}
+
+En algunos casos puede interesar crear colecciones de valores no ordenadas en las que los valores sean únicos. Este tipo de colección se asemeja al concepto matemático de conjunto. 
+
+Python ofrece un tipo de dato mutable conjunto, que únicamente tiene una restricción: a diferencia de las colecciones que acabamos de ver, un conjunto en Python sólo puede contener valores inmutables. Eso significa que no podremos crear conjuntos de listas o de diccionarios. Pero sí de cualquier tipo de números o cadenas.
+
+\subsection{Operaciones básicas}
+
+Los conjuntos se crean de dos formas: o bien usando el método \texttt{set()}, o bien directamente listando entre llaves los elementos del conjunto. Este segundo método nos recordará a los diccionarios, y tiene su sentido: las claves de un diccionario deben ser de tipos inmutables, de modo que un conjunto es como un diccionario en el que las claves no tienen ningún valor asociado.
+
+\begin{lstlisting}
+alfabeto1 = { 'a','b','c','d' }
+alfabeto2 = set(['0','1'])
+\end{lstlisting}
+
+Una vez creados, podemos añadir elementos al conjunto con el método \texttt{add()}, y eliminarlos con \texttt{discard()} o \texttt{remove()}. Todos reciben como argumento el elemento que se añade o elimina. En el caso de \texttt{remove()}, si el elemento no existe se lanza la excepción \texttt{KeyError}.
+
+\begin{lstlisting}
+alfabeto1.add('e')
+alfabeto1.discard('f') 
+\end{lstlisting}
+
+También es posible extraer un elemento cualquiera de un conjunto usando la operación \texttt{pop()} en caso de que el conjunto no sea vacío:
+\begin{lstlisting}
+a = alfabeto1.pop()
+\end{lstlisting}
+
+Con el método \texttt{clear()} es posible vaciar completamente un conjunto. También podemos conocer la cardinalidad del conjunto mediante el método \texttt{len()}, y podemos comprobar la pertenencia de un elemento a un conjunto mediante el operador \texttt{in}:
+
+\begin{lstlisting}
+if 'a' in alfabeto1:
+	print('a está en alfabeto1')
+\end{lstlisting}
+
+Podemos iterar con conjuntos, tal y como vimos aplicado al recorrido de claves de un diccionario en la sección anterior. Pero no podemos usar operaciones de indexación o troceado. Sin embargo, podemos convertir un conjunto en una lista usando el método \texttt{list()}:
+
+\begin{lstlisting}
+l = list(alfabeto1)
+\end{lstlisting}
+
+
+\subsection{Operaciones de conjuntos}
+
+Python incluye operadores binarios para realizar operaciones de unión, intersección y diferencia de conjuntos. El operador de unión es \texttt{|}, el de intersección es \texttt{\&} y el de diferencia es \texttt{-}. Por ejemplo:
+
+\begin{lstlisting}
+A = { 'violín', 'viola', 'violonchelo' }
+B = { 'trompeta', 'trombón', 'trompa' }
+C = { 'corneta', 'chirimía', 'sacabuche', 'bajón' }
+D = A | B | C
+\end{lstlisting}
+
+Otra operación disponible es \texttt{\^{}}, que permite hacer la diferencia simétrica de conjuntos (elementos que están en los conjuntos operados, salvo los que están en su intersección). 
+
+Todos los operadores relacionales (ver \ref{sec:relacionales}) se pueden aplicar a conjuntos. El operador \texttt{>=} equivale a la comprobación de conjuntos \texttt{$\supseteq$}, mientras que \texttt{>} equivale a \texttt{$\supset$}. Los operadores relacionales en sentido contrario \texttt{<=} y \texttt{<} tienen su correspondiente interpretación \texttt{$\subseteq$} y \texttt{$\subset$}.
+
+\section{Tuplas}
+
+Python ofrece un cuarto tipo de dato integrado cuyo uso es menos frecuente, pero conviene saber que existe: las \emph{tuplas}. Una tupla es como una lista inmutable, es decir, una secuencia ordenada que no puede cambiar. Se suele emplear para manejar colecciones de ítems que son fijas, como los meses de un año, por ejemplo. Sintácticamente se codifican usando paréntesis en lugar de los corchetes de las listas. Soportan también anidamiento arbitrario y pueden almacenar cualquier tipo de dato.
+
+\begin{lstlisting}
+N = ('do','re','mi','fa','sol','la','si')
+N[0] = 'ut' # Lanza una excepción TypeError
+\end{lstlisting}
+
+Quizás te venga a la memoria, en plan \emph{dejà vu}, esto de las tuplas. ¿Dónde lo hemos visto esto antes? Recordarás que las expresiones de formateo de cadenas (ver \ref{sec:expresionesFormateo}) tenían un listado de los valores que se sustituyen en la cadena, y que se indican entre paréntesis poniendo entre ellos comas, \emph{et voilà!}
+
+También se pueden crear tuplas usando la función \texttt{tuple()} que puede recibir como argumento una colección iterable (lista, conjunto u otra tupla). Todos los métodos expuestos en el apartado \ref{sec:listas} son aplicables a las tuplas, salvo los relativos a la modificación del contenido.
