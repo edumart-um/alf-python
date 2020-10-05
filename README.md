@@ -16,3 +16,7 @@ Estas son algunas de las ideas para contribuir a la mejora de estos apuntes:
 1. También sería interesante introducir ejercicios en cada capítulo para ir practicando poco a poco el uso del lenguaje. 
 1. Por supuesto, los apuntes pueden contener erratas. Con este sistema es muy fácil proponer su corrección.
 1. Los apuntes se pensaron a modo de introducción sencilla al lenguaje. Pero podría resultar útil mejorar alguna sección o ampliar con nuevas secciones que puedan aportar herramientas útiles para la aplicación de Python en una asignatura como Autómatas y Lenguajes Formales.
+
+## ¿Y qué gano contribuyendo a la mejora de estos apuntes?
+
+La filosofía de la comunidad **open source** lleva tiempo en marcha y sus beneficios son indudables. Tu contribución ayuda a los que vengan detrás, igual que tú te beneficias por lo que has recibido. Pero, si lo consideras oportuno, yo voy a mantener una lista actualizada de agradecimientos en estos apuntes en la que mencionaré a aquellos que hayan contribuido a la mejora de este material.
